@@ -1,12 +1,13 @@
                         <?php
+                        require 'config.php';
 session_start();
 // Prevent Session Hijacking
+session_regenerate_id(true); // After successful login
+header("X-Frame-Options: DENY");
+header("X-Content-Type-Options: nosniff");
+header("X-XSS-Protection: 1; mode=block");
 
-$conn = new mysqli("localhost", "root", "", "sakhibazaar");
 
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
-}
 $email = $password = '';
 $emailErr = $passwordErr = $loginErr = '';
 
@@ -39,13 +40,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
             switch ($role) {
                 case 'admin':
-                    header("Location: admin_dashboard.php");
+                    header("Location: separate-dash/admin_dashboard.php");
                     break;
                 case 'seller':
-                    header("Location: seller_dashboard.php");
+                    header("Location: separate-dash/seller_dashboard.php");
                     break;
                 case 'buyer':
-                    header("Location: buyer_dashboard.php");
+                    header("Location: separate-dash/buyer_dashboard.php");
                     break;
                 default:
                     $loginErr = "Unknown user role.";
@@ -70,7 +71,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 }
 
-$conn->close();
+
 ?>
 
 

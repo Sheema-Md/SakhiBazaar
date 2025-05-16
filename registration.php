@@ -94,7 +94,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['verify_button'])) {
                         $_SESSION['role'] = $role;
 
                         // Redirect based on role
-                        header("Location: {$role}_dashboard.php");
+                        header("Location: /separate-dash/{$role}_dashboard.php");
                         exit();
                     } else {
                         $registration_error = "Failed to update user.";
@@ -117,7 +117,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['verify_button'])) {
                     $_SESSION['role'] = $role;
 
                     // Redirect based on role
-                    header("Location: {$role}_dashboard.php");
+                    header("Location: separate-dash/{$role}_dashboard.php");
                     exit();
                 } else {
                     $registration_error = "Registration failed.";
@@ -368,8 +368,7 @@ z-index: 10;
             <a href="login.php">Already have an Account?</a>
         </div>
     </div>
-</body>
-</html>
+
 
     <script>
 
@@ -420,52 +419,50 @@ document.querySelector('button[name="generate_otp"]').addEventListener('click', 
        
 
         function googleTranslateElementInit() {
-            new google.translate.TranslateElement({
-                pageLanguage: 'en',
-                includedLanguages: 'en,hi,te,ur',
-                autoDisplay: false,
-                layout: google.translate.TranslateElement.InlineLayout.SIMPLE
-            }, 'google_translate_element');
+      new google.translate.TranslateElement({
+        pageLanguage: 'en',
+        includedLanguages: 'en,hi,te,ur',
+        autoDisplay: false,
+        layout: google.translate.TranslateElement.InlineLayout.SIMPLE
+      }, 'google_translate_element');
+    }
+
+    // Apply saved language automatically
+    function applySavedLanguage() {
+      const observer = new MutationObserver(() => {
+        const select = document.querySelector(".goog-te-combo");
+        if (select) {
+          const savedLang = localStorage.getItem("preferredLanguage");
+          if (savedLang && select.value !== savedLang) {
+            select.value = savedLang;
+            select.dispatchEvent(new Event("change"));
+          }
+
+          select.addEventListener("change", () => {
+  const selectedLang = select.value;
+  localStorage.setItem("preferredLanguage", selectedLang);
+
+  // Submit to backend
+  document.getElementById("language-input").value = selectedLang;
+  document.getElementById("language-form").submit();
+});
+
+
+          observer.disconnect();
         }
+      });
 
-        // Apply saved language automatically
-        function applySavedLanguage() {
-            const observer = new MutationObserver(() => {
-                const select = document.querySelector(".goog-te-combo");
-                if (select) {
-                    const savedLang = localStorage.getItem("preferredLanguage");
-                    if (savedLang && select.value !== savedLang) {
-                        select.value = savedLang;
-                        select.dispatchEvent(new Event("change"));
-                    }
+      observer.observe(document.body, { childList: true, subtree: true });
+    }
 
-                    select.addEventListener("change", () => {
-                        const selectedLang = select.value;
-                        localStorage.setItem("preferredLanguage", selectedLang);
+    // Load Google Translate script
+    (function loadTranslateScript() {
+      const script = document.createElement("script");
+      script.src = "//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit";
+      document.body.appendChild(script);
+    })();
 
-                        // Submit to backend
-                        document.getElementById("language-input").value = selectedLang;
-                        document.getElementById("language-form").submit();
-                    });
-
-
-                    observer.disconnect();
-                }
-            });
-
-            observer.observe(document.body, {
-                childList: true,
-                subtree: true
-            });
-        }
-
-        // Load Google Translate script
-        (function loadTranslateScript() {
-            const script = document.createElement("script");
-            script.src = "//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit";
-            document.body.appendChild(script);
-        })();
-
-        document.addEventListener("DOMContentLoaded", applySavedLanguage);
+    document.addEventListener("DOMContentLoaded", applySavedLanguage);
     </script>
-    
+    </body>
+</html>

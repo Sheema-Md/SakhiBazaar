@@ -18,10 +18,23 @@
         category: document.getElementById('category').value,
         price: document.getElementById('price').value,
         stock: document.getElementById('stock').value,
-        description: document.getElementById('description').value
+        description: document.getElementById('description').value,
+        // image: document.getElementById('imageInput').files[0] // Optional: send to server
       };
       console.log('Saving:', data); // Replace with actual save logic
       alert('Changes saved!');
+    }
+
+    function previewImage(event) {
+      const file = event.target.files[0];
+      const reader = new FileReader();
+      reader.onload = function () {
+        const output = document.getElementById('productImage');
+        output.src = reader.result;
+      };
+      if (file) {
+        reader.readAsDataURL(file);
+      }
     }
   </script>
 </head>
@@ -30,7 +43,12 @@
     
     <!-- Product Overview -->
     <div class="flex flex-col md:flex-row items-start gap-6">
-      <img src="https://via.placeholder.com/150" alt="Product" class="w-32 h-32 rounded-xl object-cover border" />
+      
+      <!-- Image Upload -->
+      <div class="flex flex-col items-center space-y-2">
+        <img id="productImage" src="https://via.placeholder.com/150" alt="Product" class="w-32 h-32 rounded-xl object-cover border" />
+        <input type="file" accept="image/*" id="imageInput" onchange="previewImage(event)" class="text-sm text-purple-800"/>
+      </div>
       
       <div class="flex-1 space-y-4">
         <div>
