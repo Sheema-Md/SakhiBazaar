@@ -43,7 +43,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     header("Location: separate-dash/admin_dashboard.php");
                     break;
                 case 'seller':
-                    header("Location: separate-dash/seller_dashboard.php");
+                    header("Location: seller_dashboard2.php");
                     break;
                 case 'buyer':
                     header("Location: separate-dash/buyer_dashboard.php");

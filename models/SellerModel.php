@@ -1,4 +1,6 @@
 <?php
+
+
 class SellerModel {
     private $conn;
 
@@ -7,16 +9,18 @@ class SellerModel {
     }
 
     public function getSellerName($userId) {
+        $name = null;
         $stmt = $this->conn->prepare("SELECT name FROM users WHERE id = ?");
         $stmt->bind_param("i", $userId);
         $stmt->execute();
         $stmt->bind_result($name);
-        $fetched = $stmt->fetch();  // returns true if row fetched
+        $fetched = $stmt->fetch();
         $stmt->close();
-        return $fetched ? $name : 'Seller';  // fallback if no name found
+        return $fetched && $name !== null ? $name : 'Seller';
     }
 
     public function getTotalSales($userId) {
+        $totalSales = 0;
         $stmt = $this->conn->prepare("
             SELECT SUM(o.quantity * p.price)
             FROM orders o
@@ -28,10 +32,11 @@ class SellerModel {
         $stmt->bind_result($totalSales);
         $fetched = $stmt->fetch();
         $stmt->close();
-        return $fetched && $totalSales !== null ? $totalSales : 0;  // handle NULL sum
+        return $fetched && $totalSales !== null ? $totalSales : 0;
     }
 
     public function getTotalProducts($userId) {
+        $total = 0;
         $stmt = $this->conn->prepare("SELECT COUNT(*) FROM products WHERE user_id = ?");
         $stmt->bind_param("i", $userId);
         $stmt->execute();
@@ -42,6 +47,7 @@ class SellerModel {
     }
 
     public function getTotalCustomers($userId) {
+        $totalCustomers = 0;
         $stmt = $this->conn->prepare("
             SELECT COUNT(DISTINCT o.buyer_id)
             FROM orders o
@@ -57,6 +63,7 @@ class SellerModel {
     }
 
     public function getAverageRating($userId) {
+        $avg = null;
         $stmt = $this->conn->prepare("SELECT AVG(rating) FROM products WHERE user_id = ?");
         $stmt->bind_param("i", $userId);
         $stmt->execute();
@@ -66,7 +73,6 @@ class SellerModel {
         return ($fetched && $avg !== null) ? round($avg, 1) : 0;
     }
 
-    // For queries returning multiple rows, use get_result if supported:
     public function getRecentOrders($userId) {
         $stmt = $this->conn->prepare("
             SELECT o.id AS order_id, b.name AS buyer_name, p.product_name, o.quantity, o.status, o.order_date, p.price 

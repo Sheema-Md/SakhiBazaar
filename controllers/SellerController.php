@@ -1,12 +1,13 @@
 <?php
-require_once '../config.php';
-require_once '../models/SellerModel.php';
+require_once 'config.php';
+require_once 'models/SellerModel.php';
+require_once 'views/seller_dashboard_view.php';
 
 session_start();
 
-if (!isset($_SESSION['user_id'])) {
-    header('Location: ../login.php');
-    exit;
+if (!isset($_SESSION["loggedin"]) || $_SESSION["role"] !== 'seller') {
+    header("Location: ../login.php");
+    exit();
 }
 
 $userId = $_SESSION['user_id'];
