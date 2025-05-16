@@ -1,5 +1,5 @@
-<?php require_once '../partials/header.php'; ?>
-<?php require_once '../partials/sidebar.php';
+<?php require_once 'partials/header.php'; ?>
+<?php require_once 'partials/sidebar.php';
 if (!isset($_SESSION["loggedin"]) || $_SESSION["role"] !== 'seller') {
     header("Location:../login.php");
     exit();
@@ -58,4 +58,4 @@ if (!isset($_SESSION["loggedin"]) || $_SESSION["role"] !== 'seller') {
     </section>
 </main>
 
-<?php require_once '../partials/footer.php'; ?>
+<?php require_once 'partials/footer.php'; ?>
