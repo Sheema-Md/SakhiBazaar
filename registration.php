@@ -117,7 +117,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['verify_button'])) {
                     $_SESSION['role'] = $role;
 
                     // Redirect based on role
-                    header("Location: separate-dash/{$role}_dashboard.php");
+                    header("Location:{$role}_dashboard.php");
                     exit();
                 } else {
                     $registration_error = "Registration failed.";
