@@ -1,9 +1,14 @@
-<?php require_once 'partials/header.php'; ?>
-<?php require_once 'partials/sidebar.php';
+<?php 
+
 if (!isset($_SESSION["loggedin"]) || $_SESSION["role"] !== 'seller') {
     header("Location:../login.php");
     exit();
-} ?>
+}?>
+<?php require_once 'partials/header.php'; ?>
+<?php require_once 'partials/sidebar.php';
+
+require_once 'models/SellerModel.php';
+ ?>
 <main class="main-content">
     <div class="overlay" id="overlay"></div>
     <header class="topbar">
@@ -14,7 +19,7 @@ if (!isset($_SESSION["loggedin"]) || $_SESSION["role"] !== 'seller') {
             <option>English</option>
         </select>
         <i class="fas fa-bell notification-icon"><span class="badge">3</span></i>
-        <div class="profile-name"><?php echo htmlspecialchars($username); ?></div>
+        <div class="profile-name"><?php echo htmlspecialchars($data['name']); ?></div>
 
     </header>
     <section class="welcome-section">
@@ -46,16 +51,16 @@ if (!isset($_SESSION["loggedin"]) || $_SESSION["role"] !== 'seller') {
     </section>
 
     <!-- Recent Orders -->
-    <section class="recent-orders">
-        <h2>Recent Orders</h2>
-        <!-- Table loop using $data['recentOrders'] -->
-    </section>
+   <?php
+   echo $sellerModel->getRecentOrdersHTML( $userId);
+echo $sellerModel->getProductsHTML( $userId);
+echo $sellerModel->getFinancialLiteracyHTML();
 
-    <!-- Your Products -->
-    <section class="your-products">
-        <h2>Your Products</h2>
-        <!-- Loop using $data['products'] -->
-    </section>
-</main>
+?>
+
+    </main>
+    
+</body>
+</html>
 
 <?php require_once 'partials/footer.php'; ?>
