@@ -1,90 +1,91 @@
- const hamburger = document.getElementById('hamburger-btn');
-const sidebar = document.getElementById('sidebar');
-const overlay = document.getElementById('overlay');
+// Sidebar toggle and overlay logic
+document.addEventListener('DOMContentLoaded', () => {
+  const hamburger = document.getElementById('hamburger-btn');
+  const sidebar = document.getElementById('sidebar');
+  const overlay = document.getElementById('overlay');
 
-hamburger.addEventListener('click', () => {
-    sidebar.classList.add('active');
-    overlay.classList.add('active');
-    hamburger.style.display = 'none'; // Hide hamburger
-});
-
-overlay.addEventListener('click', () => {
-    sidebar.classList.remove('active');
-    overlay.classList.remove('active');
-    hamburger.style.display = 'block'; // Show hamburger again
-});
-
-document.querySelectorAll('.sidebar nav a').forEach(link => {
-    link.addEventListener('click', function() {
-        // Remove 'active' from all links
-        document.querySelectorAll('.sidebar nav a').forEach(el => el.classList.remove('active'));
-
-        // Add 'active' to clicked link
-        this.classList.add('active');
+  if (hamburger && sidebar && overlay) {
+    hamburger.addEventListener('click', () => {
+      sidebar.classList.add('active');
+      overlay.classList.add('active');
+      hamburger.style.display = 'none';
     });
-});
 
-// ✅ Fix: Handle window resize to reset states on desktop view
-window.addEventListener('resize', () => {
-    if (window.innerWidth > 768) {
-        // Remove sidebar & overlay active classes
+    overlay.addEventListener('click', () => {
+      sidebar.classList.remove('active');
+      overlay.classList.remove('active');
+      hamburger.style.display = 'block';
+    });
+
+    document.querySelectorAll('.sidebar nav a').forEach(link => {
+      link.addEventListener('click', function () {
+        document.querySelectorAll('.sidebar nav a').forEach(el => el.classList.remove('active'));
+        this.classList.add('active');
+      });
+    });
+
+    // Handle screen resize
+    window.addEventListener('resize', () => {
+      if (window.innerWidth > 768) {
         sidebar.classList.remove('active');
         overlay.classList.remove('active');
-
-        // Ensure hamburger icon is hidden in desktop mode
         hamburger.style.display = 'none';
-    } else {
-        // On smaller screens, hamburger should be visible
+      } else {
         hamburger.style.display = 'block';
-    }
-});
+      }
+    });
+  }
 
-if (!localStorage.getItem("preferredLanguage")) {
-      localStorage.setItem("preferredLanguage", "te"); // Telugu as default
-    }
+  // Set default language in localStorage
+  if (!localStorage.getItem("preferredLanguage")) {
+    localStorage.setItem("preferredLanguage", "te"); // Default: Telugu
+  }
 
-    function googleTranslateElementInit() {
-      new google.translate.TranslateElement({
-        pageLanguage: 'en',
-        includedLanguages: 'en,hi,te,ur',
-        autoDisplay: false,
-        layout: google.translate.TranslateElement.InlineLayout.SIMPLE
-      }, 'google_translate_element');
-    }
+  // Google Translate init
+  window.googleTranslateElementInit = function () {
+    new google.translate.TranslateElement({
+      pageLanguage: 'en',
+      includedLanguages: 'en,hi,te,ur',
+      autoDisplay: false,
+      layout: google.translate.TranslateElement.InlineLayout.SIMPLE
+    }, 'google_translate_element');
+  };
 
-    // Apply saved language automatically
-    function applySavedLanguage() {
-      const observer = new MutationObserver(() => {
-        const select = document.querySelector(".goog-te-combo");
-        if (select) {
-          const savedLang = localStorage.getItem("preferredLanguage");
-          if (savedLang && select.value !== savedLang) {
-            select.value = savedLang;
-            select.dispatchEvent(new Event("change"));
-          }
-
-          select.addEventListener("change", () => {
-  const selectedLang = select.value;
-  localStorage.setItem("preferredLanguage", selectedLang);
-
-  // Submit to backend
-  document.getElementById("language-input").value = selectedLang;
-  document.getElementById("language-form").submit();
-});
-
-
-          observer.disconnect();
+  // Apply previously selected language
+  function applySavedLanguage() {
+    const observer = new MutationObserver(() => {
+      const select = document.querySelector(".goog-te-combo");
+      if (select) {
+        const savedLang = localStorage.getItem("preferredLanguage");
+        if (savedLang && select.value !== savedLang) {
+          select.value = savedLang;
+          select.dispatchEvent(new Event("change"));
         }
-      });
 
-      observer.observe(document.body, { childList: true, subtree: true });
-    }
+        select.addEventListener("change", () => {
+          const selectedLang = select.value;
+          localStorage.setItem("preferredLanguage", selectedLang);
 
-    // Load Google Translate script
-    (function loadTranslateScript() {
-      const script = document.createElement("script");
-      script.src = "//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit";
-      document.body.appendChild(script);
-    })();
+          // Submit to backend
+          const langInput = document.getElementById("language-input");
+          const langForm = document.getElementById("language-form");
+          if (langInput && langForm) {
+            langInput.value = selectedLang;
+            langForm.submit();
+          }
+        });
 
-    document.addEventListener("DOMContentLoaded", applySavedLanguage);
+        observer.disconnect();
+      }
+    });
+
+    observer.observe(document.body, { childList: true, subtree: true });
+  }
+
+  // Load Google Translate Script
+  const translateScript = document.createElement("script");
+  translateScript.src = "//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit";
+  document.body.appendChild(translateScript);
+
+  applySavedLanguage();
+});

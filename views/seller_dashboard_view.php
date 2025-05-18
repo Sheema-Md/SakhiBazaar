@@ -47,20 +47,25 @@ require_once 'models/SellerModel.php';
                 <p>Rating</p>
             </div>
         </div>
-        <button class="add-product-btn"><a href = "addproduct.php">+ Add New Product</button></a>
-    </section>
+        <a href="addproduct.php" class="add-product-btn">+Add New Product</a>
 
+    </section>
+      
     <!-- Recent Orders -->
    <?php
-   echo $sellerModel->getRecentOrdersHTML( $userId);
-echo $sellerModel->getProductsHTML( $userId);
-echo $sellerModel->getFinancialLiteracyHTML();
+   echo $sellerModel->getRecentOrdersHTML( $userId);?>
+   <section class="motivational-quote">
+        <h2>Motivational Quote</h2>
+        <blockquote>"The secret of change is to focus all of your energy, not on fighting the old, but on building the new." - Socrates</blockquote>
+      </section>
+<?php echo $sellerModel->getProductsHTML( $userId);
+echo $sellerModel->getFinancialLiteracyHTML();?>
 
 ?>
 
-    </main>
     
-</body>
-</html>
+<script src = "js/script.js">
+</script>
+
 
 <?php require_once 'partials/footer.php'; ?>
