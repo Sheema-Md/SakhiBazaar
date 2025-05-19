@@ -178,7 +178,7 @@ class SellerModel {
                 </div>
                 <?php endforeach; ?>
             </div>
-            <a href="viewproduct.php" class="view-all-btn"> View All Products</a>
+            <a href="view-products.php" class="view-all-btn"> View All Products</a>
 
         </section>
         <?php return ob_get_clean();

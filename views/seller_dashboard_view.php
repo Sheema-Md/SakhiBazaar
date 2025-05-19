@@ -17,6 +17,10 @@ require_once 'models/SellerModel.php';
         </button>
         <select class="language-select">
             <option>English</option>
+            <option>Telugu</option>
+            <option>Hindi</option>
+            <option>Urdu</option>
+            
         </select>
         <i class="fas fa-bell notification-icon"><span class="badge">3</span></i>
         <div class="profile-name"><?php echo htmlspecialchars($data['name']); ?></div>
@@ -61,7 +65,7 @@ require_once 'models/SellerModel.php';
 <?php echo $sellerModel->getProductsHTML( $userId);
 echo $sellerModel->getFinancialLiteracyHTML();?>
 
-?>
+
 
     
 <script src = "js/script.js">
