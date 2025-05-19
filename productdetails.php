@@ -8,7 +8,9 @@
   <script>
     function confirmDelete() {
       if (confirm("Are you sure you want to delete this product?")) {
-        alert("Product deleted."); // Replace with actual delete logic
+        // Simulate DB delete
+        console.log("Deleting product from DB...");
+        alert("Product deleted.");
       }
     }
 
@@ -19,9 +21,10 @@
         price: document.getElementById('price').value,
         stock: document.getElementById('stock').value,
         description: document.getElementById('description').value,
-        // image: document.getElementById('imageInput').files[0] // Optional: send to server
+        // Optional: You can handle image upload with FormData
       };
-      console.log('Saving:', data); // Replace with actual save logic
+
+      console.log('Saving to DB:', data);
       alert('Changes saved!');
     }
 
@@ -46,8 +49,11 @@
       
       <!-- Image Upload -->
       <div class="flex flex-col items-center space-y-2">
-        <img id="productImage" src="https://via.placeholder.com/150" alt="Product" class="w-32 h-32 rounded-xl object-cover border" />
-        <input type="file" accept="image/*" id="imageInput" onchange="previewImage(event)" class="text-sm text-purple-800"/>
+        <label for="imageInput" class="cursor-pointer w-32 h-32 flex items-center justify-center rounded-xl border text-purple-600 text-3xl hover:bg-purple-100 transition">
+          +
+        </label>
+        <input type="file" accept="image/*" id="imageInput" onchange="previewImage(event)" class="hidden"/>
+        <img id="productImage" src="https://via.placeholder.com/150" alt="Product" class="w-32 h-32 rounded-xl object-cover border mt-2 hidden"/>
       </div>
       
       <div class="flex-1 space-y-4">
@@ -56,16 +62,24 @@
           <input id="name" type="text" value="Handwoven Cotton Saree"
                  class="w-full mt-1 p-2 border rounded-md bg-purple-50 focus:outline-purple-500" />
         </div>
+
         <div>
           <label for="category" class="block text-sm font-medium text-purple-800">Category</label>
-          <input id="category" type="text" value="Ethnic Wear"
-                 class="w-full mt-1 p-2 border rounded-md bg-purple-50 focus:outline-purple-500" />
+          <select id="category" class="w-full mt-1 p-2 border rounded-md bg-purple-50 focus:outline-purple-500">
+            <option value="Clothing">👗 Clothing</option>
+            <option value="Accessories">👜 Accessories</option>
+            <option value="Handicrafts">🪡 Handicrafts</option>
+            <option value="Home Decor">🏠 Home Decor</option>
+            <option value="Other">❔ Other</option>
+          </select>
         </div>
+
         <div>
           <label for="price" class="block text-sm font-medium text-purple-800">Price</label>
           <input id="price" type="text" value="₹1200"
                  class="w-full mt-1 p-2 border rounded-md bg-purple-50 focus:outline-purple-500" />
         </div>
+
         <div>
           <label for="stock" class="block text-sm font-medium text-purple-800">Stock Status</label>
           <select id="stock" class="w-full mt-1 p-2 border rounded-md bg-purple-50 focus:outline-purple-500">
@@ -84,7 +98,7 @@
 A beautifully handcrafted cotton saree made by rural artisans. Perfect for festive occasions.
       </textarea>
     </div>
-
+      
     <!-- Actions -->
     <div class="flex flex-col sm:flex-row justify-end gap-4 pt-4 border-t">
       <button onclick="saveChanges()"
@@ -98,5 +112,15 @@ A beautifully handcrafted cotton saree made by rural artisans. Perfect for festi
     </div>
     
   </div>
+
+  <script>
+    // Show image preview box after selecting an image
+    document.getElementById('imageInput').addEventListener('change', () => {
+      const img = document.getElementById('productImage');
+      if (img.src) {
+        img.classList.remove('hidden');
+      }
+    });
+  </script>
 </body>
 </html>
