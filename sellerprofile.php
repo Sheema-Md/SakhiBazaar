@@ -23,6 +23,7 @@ if ($result->num_rows > 0) {
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Seller Profile Page</title>
+  <script src = "js/script.js"></script>
   <style>
     :root {
       --lavender: #e6e6fa;
