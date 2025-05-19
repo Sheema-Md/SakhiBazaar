@@ -21,6 +21,7 @@ $name = $_POST['name'] ?? '';
 // Handle profile picture upload
 $profile_picture = null; // null means no update to profile_pic
 
+// Check if profile_picture is sent via POST (as base64 string or empty to remove)
 if (isset($_FILES['profile_picture']) && $_FILES['profile_picture']['error'] === UPLOAD_ERR_OK) {
     $uploadDir = 'uploads/';
     if (!is_dir($uploadDir)) {
