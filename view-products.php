@@ -1,3 +1,21 @@
+<?php
+require "config.php";
+session_start();
+
+$user_id = $_SESSION['id'];
+
+$sql = "SELECT id, product_name, description, price, quantity, image_url, rating FROM products WHERE user_id = $user_id ORDER BY id DESC";
+$result = $conn->query($sql);
+
+$products = [];
+if ($result && $result->num_rows > 0) {
+    while ($row = $result->fetch_assoc()) {
+        $products[] = $row;
+    }
+}
+
+$conn->close();
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -5,38 +23,38 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Your Products</title>
   <style>
+    /* Your existing CSS here */
     body {
       margin: 0;
       font-family: 'Segoe UI', sans-serif;
       background: linear-gradient(#EDE4F0, #ffffff);
     }
-
     .your-products {
       padding: 20px;
     }
-
     .your-products h2 {
       margin: 20px 0;
       text-align: center;
       font-size: 2rem;
     }
-
     .product-cards {
-      display: flex;
-      flex-direction: column;
+      display: grid;
+      grid-template-columns: 1fr;
       gap: 20px;
       padding: 20px;
-      max-width: 600px;
+      max-width: 1000px;
       margin: 0 auto;
-      transition: all 0.3s ease;
     }
-
-    body.responsive .product-cards {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-      max-width: 100%;
+    @media (min-width: 600px) {
+      .product-cards {
+        grid-template-columns: repeat(2, 1fr);
+      }
     }
-
+    @media (min-width: 1000px) {
+      .product-cards {
+        grid-template-columns: repeat(3, 1fr);
+      }
+    }
     .product-card {
       background: #fff;
       padding: 15px;
@@ -45,12 +63,10 @@
       transition: transform 0.3s, box-shadow 0.3s;
       text-align: center;
     }
-
     .product-card:hover {
       transform: translateY(-5px);
       box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
     }
-
     .image-placeholder {
       width: 100%;
       height: 150px;
@@ -62,152 +78,112 @@
       align-items: center;
       justify-content: center;
     }
-
     .product-card img {
       width: 100%;
       height: 100%;
       object-fit: cover;
       border-radius: 10px;
     }
-
     .in-stock {
       border: 2px solid green;
       background-color: #e6ffed;
     }
-
     .low-stock {
       border: 2px solid #ffc107;
       background-color: #fff8e1;
     }
-
     .out-of-stock {
       border: 2px solid #dc3545;
       background-color: #f8d7da;
     }
-
     .product-description {
       font-size: 0.9rem;
       color: #555;
       margin-bottom: 8px;
     }
-
     .rating {
       margin-top: 10px;
       font-size: 14px;
     }
-
     h3 {
       margin: 10px 0 5px;
     }
-
-    /* Toggle Button Style */
-    .toggle-button {
-      display: block;
-      width: 200px;
-      margin: 20px auto 0;
-      padding: 10px;
-      background-color: #007bff;
+    .mobile-back-button {
+      display: none;
+      position: fixed;
+      top: 15px;
+      left: 15px;
+      z-index: 999;
+      background: #6a0dad;
       color: white;
       border: none;
-      border-radius: 5px;
-      font-size: 16px;
+      border-radius: 6px;
+      padding: 10px 16px;
+      font-size: 1rem;
       cursor: pointer;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.15);
     }
-
-    .toggle-button:hover {
-      background-color: #0056b3;
+    .mobile-back-button:hover {
+      background: #4b0082;
+    }
+    @media (max-width: 768px) {
+      .mobile-back-button {
+        display: block;
+      }
     }
   </style>
 </head>
 <body>
+  <button class="mobile-back-button" onclick="history.back()">←</button>
 
-<section class="your-products"> 
-  <h2>Your Products</h2>
-  <div class="product-cards">
+  <section class="your-products"> 
+    <h2>Your Products</h2>
+    <div class="product-cards">
+      <?php if (count($products) > 0): ?>
+        <?php foreach ($products as $product): ?>
+          <?php
+            $stock = (int)$product['quantity'];
+            if ($stock > 10) {
+              $stock_class = "in-stock";
+              $stock_label = "In stock";
+            } elseif ($stock > 0) {
+              $stock_class = "low-stock";
+              $stock_label = "Low stock";
+            } else {
+              $stock_class = "out-of-stock";
+              $stock_label = "Out of stock";
+            }
 
-    <!-- Product 1 -->
-    <div class="product-card in-stock">
-      <div class="image-placeholder">
-        <img src="https://via.placeholder.com/150" alt="Sample Product">
-      </div>
-      <h3>Sample Product 1</h3>
-      <p class="product-description">This is a great product with high quality.</p>
-      <p>Stock: 25 | In stock</p>
-      <span>₹499.00</span>
-      <div class="rating">⭐⭐⭐⭐☆ (4.2)</div>
+            $rating = round(floatval($product['rating']) * 2) / 2;
+            $fullStars = floor($rating);
+            $halfStar = ($rating - $fullStars) == 0.5;
+            $emptyStars = 5 - $fullStars - ($halfStar ? 1 : 0);
+
+            $stars_html = str_repeat("⭐", $fullStars);
+            if ($halfStar) $stars_html .= "✰";
+            $stars_html .= str_repeat("☆", $emptyStars);
+
+            $image_url = !empty($product['image_url']) ? htmlspecialchars($product['image_url']) : "https://via.placeholder.com/150?text=No+Image";
+
+            $name = htmlspecialchars($product['product_name']);
+            $description = htmlspecialchars($product['description']);
+            $price = number_format(floatval($product['price']), 2);
+          ?>
+          <div class="product-card <?= $stock_class ?>">
+            <div class="image-placeholder">
+              <img src="<?= $image_url ?>" alt="<?= $name ?>">
+            </div>
+            <h3><?= $name ?></h3>
+            <p class="product-description"><?= $description ?></p>
+            <p>Stock: <?= $stock ?> | <?= $stock_label ?></p>
+            <span>₹<?= $price ?></span>
+            <div class="rating"><?= $stars_html ?> (<?= $rating ?>)</div>
+          </div>
+        <?php endforeach; ?>
+      <?php else: ?>
+        <p style="text-align:center;">No products found for your account.</p>
+      <?php endif; ?>
     </div>
-
-    <!-- Product 2 -->
-    <div class="product-card low-stock">
-      <div class="image-placeholder">
-        <img src="https://via.placeholder.com/150" alt="Another Product">
-      </div>
-      <h3>Sample Product 2</h3>
-      <p class="product-description">Limited stock available. Hurry up!</p>
-      <p>Stock: 3 | Low stock</p>
-      <span>₹299.00</span>
-      <div class="rating">⭐⭐⭐☆ (3.5)</div>
-    </div>
-
-    <!-- Product 3 -->
-    <div class="product-card out-of-stock">
-      <div class="image-placeholder">
-        <div style="background:#eee;width:100%;height:100%;"></div>
-      </div>
-      <h3>Sample Product 3</h3>
-      <p class="product-description">Currently unavailable. Restocking soon.</p>
-      <p>Stock: 0 | Out of stock</p>
-      <span>₹199.00</span>
-      <div class="rating">⭐⭐☆☆☆ (2.0)</div>
-    </div>
-
-    <!-- Product 4 -->
-    <div class="product-card in-stock">
-      <div class="image-placeholder">
-        <img src="https://via.placeholder.com/150/00FF00/FFFFFF?text=Product+4" alt="Product 4">
-      </div>
-      <h3>Wireless Earbuds</h3>
-      <p class="product-description">Compact and stylish wireless earbuds with great sound.</p>
-      <p>Stock: 40 | In stock</p>
-      <span>₹1,299.00</span>
-      <div class="rating">⭐⭐⭐⭐⭐ (4.8)</div>
-    </div>
-
-    <!-- Product 5 -->
-    <div class="product-card low-stock">
-      <div class="image-placeholder">
-        <img src="https://via.placeholder.com/150/FFA500/FFFFFF?text=Product+5" alt="Product 5">
-      </div>
-      <h3>Bluetooth Speaker</h3>
-      <p class="product-description">High bass portable speaker. Limited stock left!</p>
-      <p>Stock: 5 | Low stock</p>
-      <span>₹799.00</span>
-      <div class="rating">⭐⭐⭐⭐ (4.0)</div>
-    </div>
-
-    <!-- Product 6 -->
-    <div class="product-card out-of-stock">
-      <div class="image-placeholder">
-        <img src="https://via.placeholder.com/150/FF0000/FFFFFF?text=Product+6" alt="Product 6">
-      </div>
-      <h3>Gaming Mouse</h3>
-      <p class="product-description">Ergonomic gaming mouse with RGB lighting.</p>
-      <p>Stock: 0 | Out of stock</p>
-      <span>₹599.00</span>
-      <div class="rating">⭐⭐⭐☆☆ (3.0)</div>
-    </div>
-
-  </div>
-
-  <!-- Responsive Toggle Button -->
-  <button class="toggle-button" onclick="toggleResponsive()">Toggle Responsive Mode</button>
-</section>
-
-<script>
-  function toggleResponsive() {
-    document.body.classList.toggle("responsive");
-  }
-</script>
-
+  </section>
 </body>
-</html>
+</html>   
