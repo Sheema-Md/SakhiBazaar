@@ -16,6 +16,20 @@ if ($result->num_rows > 0) {
     echo "User not found";
     exit();
 }
+// Total products by this user
+$product_stmt = $conn->prepare("SELECT COUNT(*) AS total FROM products WHERE user_id = ?");
+$product_stmt->bind_param("i", $user_id);
+$product_stmt->execute();
+$product_result = $product_stmt->get_result();
+$product_data = $product_result->fetch_assoc();
+
+// Average rating for this user's store
+$rating_stmt = $conn->prepare("SELECT AVG(rating) AS avg_rating FROM products WHERE user_id = ?");
+$rating_stmt->bind_param("i", $user_id);
+$rating_stmt->execute();
+$rating_result = $rating_stmt->get_result();
+$rating_data = $rating_result->fetch_assoc();
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -256,9 +270,10 @@ if ($result->num_rows > 0) {
       <p class="profile-info" id="dispName"></p>
       <p class="profile-info" id="dispStore"></p>
       <div class="stats" aria-label="Store statistics">
-        <div>Total Products: </div>
-        <div>Store Rating: </div>
-      </div>
+  <div>Total Products: <?= $product_data['total'] ?? 0 ?></div>
+  <div>Store Rating: <?= $rating_data['avg_rating'] ? number_format($rating_data['avg_rating'], 1) : "N/A" ?></div>
+</div>
+
     </section>
 
     <!-- Editable Information Form -->

@@ -10,8 +10,18 @@
   <a href="sellerprofile.php" class="<?= $current_page === 'sellerprofile.php' ? 'active' : '' ?>">
     <i class="fas fa-user"></i> Profile
   </a>
-  <a href="product-listing.php" class="<?= $current_page === 'product-listing.php' ? 'active' : '' ?>">
-    <i class="fas fa-box"></i> Product Listing
+ <div class="sidebar-dropdown">
+  <a href="product-listing.php" class="<?= $current_page === 'product-listing.php' ? 'active' : '' ?>" id="product-listing-toggle">
+    <i class="fas fa-box"></i> Product Listing <i class="fas fa-chevron-down dropdown-icon"></i>
+  </a>
+  <div class="sidebar-submenu" id="product-listing-submenu" style="display: <?= $current_page === 'product-listing.php' ? 'block' : 'none' ?>;">
+    <a href="product-listing.php?tab=drafts" class="sub-link">Drafts</a>
+    <a href="product-listing.php?tab=listed" class="sub-link">Listed Products</a>
+    <a href="product-listing.php?tab=sold" class="sub-link">Sold Products</a>
+    <a href="addproduct.php" class="sub-link">Add Product</a>
+  </div>
+</div>
+
   </a>
   <a href="marketplace.php" class="<?= $current_page === 'marketplace.php' ? 'active' : '' ?>">
     <i class="fas fa-store"></i> Marketplace
@@ -39,3 +49,10 @@
     </form>
       </div>
 </aside>
+<script>
+document.getElementById('product-listing-toggle').addEventListener('click', function(e) {
+    e.preventDefault(); // Prevents page reload
+    const submenu = document.getElementById('product-listing-submenu');
+    submenu.style.display = (submenu.style.display === 'block') ? 'none' : 'block';
+});
+</script>
