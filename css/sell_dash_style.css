@@ -444,3 +444,19 @@ a.view-all-btn:hover {
       align-items: center;
       justify-content: center;
     }
+    .sidebar-submenu {
+  padding-left: 20px;
+  display: none;
+  flex-direction: column;
+}
+
+.sidebar-submenu .sub-link {
+  padding: 5px 0;
+  color:#7e22ce;
+  text-decoration: none;
+  display: block;
+}
+
+.sidebar-submenu .sub-link:hover {
+  color: #e0d4ff;
+}

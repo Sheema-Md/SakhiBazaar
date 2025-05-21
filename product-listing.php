@@ -50,7 +50,24 @@ $data = [
         </nav>
 
         <div class="tab-content" id="drafts">
-            
+            <?php
+$active_tab = $_GET['tab'] ?? 'drafts';
+?>
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const activeTab = "<?php echo $active_tab; ?>";
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.classList.remove('active');
+        if (btn.dataset.tab === activeTab) btn.classList.add('active');
+    });
+
+    document.querySelectorAll('.tab-content').forEach(tab => {
+        tab.style.display = 'none';
+        if (tab.id === activeTab) tab.style.display = 'block';
+    });
+});
+</script>
+
             <h2>Draft Products</h2>
             <?php 
             // You need to implement this function to get drafts
