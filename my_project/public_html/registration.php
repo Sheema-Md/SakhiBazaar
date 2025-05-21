@@ -1,5 +1,5 @@
 <?php
-require_once 'config.php';
+require_once '/../config/config.php';
 /*require_once 'vendor/autoload.php';  // Ensure this is included at the top
 require_once 'config.php';  // Your config file if any
 $client = new Google_Client();

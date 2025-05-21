@@ -1,4 +1,4 @@
-<?php require_once "config.php";
+<?php require_once  __DIR__ . "/../config/config.php";
 session_start();
 
 $user_id = $_SESSION['id'];
