@@ -5,7 +5,7 @@ if (!isset($_SESSION["loggedin"]) || $_SESSION["role"] !== 'seller') {
     exit();
 }
  // connection to DB
-$conn = new mysqli("localhost", "root", "", "sakhibazaar");
+
 $userId = $_SESSION["id"];
 $sql = "SELECT name FROM users WHERE id = ?";
 $stmt = $conn->prepare($sql);

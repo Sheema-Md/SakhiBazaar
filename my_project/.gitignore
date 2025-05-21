@@ -1,0 +1,9 @@
+# .gitignore file
+
+# Ignore the directory containing sensitive configuration
+/config/
+
+# You can add other files/folders you don't want in Git
+# Thumbs.db        # Windows thumbnail cache
+# .DS_Store       # macOS specific
+# *.log           # Log files
