@@ -3,7 +3,7 @@
 <?php
 session_start();
  // connection to DB
-$conn = new mysqli("localhost", "root", "", "sakhibazaar");
+
 // Check if user is logged in & role is seller
 if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'seller') {
     header("Location: login.php");

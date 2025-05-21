@@ -1,7 +1,7 @@
 
 <?php
 // DB Connection
-require "config.php";
+require __DIR__ .  "/../config/config.php";
 session_start();
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
