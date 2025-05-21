@@ -198,4 +198,175 @@ class SellerModel {
     return ob_get_clean();
 }
 
+public function getDraftProductsHTML($userId) {
+    $stmt = $this->conn->prepare("SELECT product_name, description, price, quantity, image_url FROM products WHERE user_id = ? AND status = 'draft'");
+    $stmt->bind_param("i", $userId);
+    $stmt->execute();
+    $result = $stmt->get_result();
+
+    if ($result->num_rows === 0) {
+        return '<p>No draft products available.</p>';
+    }
+
+    $html = '<div class="product-cards">';
+while ($row = $result->fetch_assoc()) {
+    $imagePath = !empty($row['image_url']) ? htmlspecialchars($row['image_url']) : '../images/placeholder.png';
+
+    $html .= '
+        <div class="product-card">
+            <div class="image-placeholder">
+                <img src="' . $imagePath . '" alt="' . htmlspecialchars($row['product_name']) . '" class="product-image">
+            </div>
+            <h3>' . htmlspecialchars($row['product_name']) . '</h3>
+            <p>' . htmlspecialchars($row['description']) . '</p>
+            <p><strong>Price:</strong> ₹' . htmlspecialchars($row['price']) . '</p>
+            <p><strong>Quantity:</strong> ' . htmlspecialchars($row['quantity']) . '</p>
+        </div>';
 }
+$html .= '</div>';
+return $html;
+
+}
+
+public function getListedProductsHTML($userId) {
+    $products = $this->getProductsByStatus($userId, 'published');
+
+    
+    ob_start(); ?>
+     <section class="your-products">
+    <div class="product-cards">
+        
+     
+            <?php foreach ($products as $row):
+
+                $stockClass = ($row['quantity'] == 0) ? 'out-of-stock' : (($row['quantity'] <= 5) ? 'low-stock' : 'in-stock');
+                $imagePath = !empty($row['image_url']) ?  $row['image_url'] : 'images/placeholder.png';
+            ?>
+            <div class="product-card <?php echo $stockClass; ?>">
+                <div class="image-placeholder">
+                    <img src="<?php echo htmlspecialchars($imagePath); ?>" alt="<?php echo htmlspecialchars($row['product_name']); ?>" style="width:100%;height:auto;">
+                </div>
+                
+                <h3><?php echo htmlspecialchars($row['product_name']); ?></h3>
+                <p class="product-description"><?php echo htmlspecialchars($row['description']); ?></p>
+                <p>Stock: <?php echo $row['quantity']; ?></p>
+                <span>₹<?php echo number_format($row['price'], 2); ?></span>
+                <div class="rating">
+                    <?php 
+                    $rating = isset($row['rating']) ? $row['rating'] : 0;
+                    $fullStars = floor($rating);
+                    $halfStar = ($rating - $fullStars >= 0.5) ? 1 : 0;
+                    $emptyStars = 5 - $fullStars - $halfStar;
+
+                    echo str_repeat('⭐', $fullStars);
+                    if ($halfStar) echo '⭐';
+                    echo str_repeat('☆', $emptyStars);
+                    ?> (<?php echo number_format($rating, 1); ?>)
+                    
+                </div>
+                
+            </div>
+            <?php endforeach?>
+            </div>
+            </section>
+        <a href="view-products.php" class="view-all-btn">View All Products</a>
+    </section>
+    <?php return ob_get_clean();
+} 
+
+
+public function getSoldProductsHTML($userId) {
+    $sold = $this->getSoldProducts($userId);
+    ob_start();
+    ?>
+    <style>
+        .sold-products-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+
+        }
+
+        .sold-products-table thead {
+            background-color:#7e22ce;
+        }
+
+        .sold-products-table th, .sold-products-table td {
+            padding: 12px 16px;
+            border: 2px solid #ddd;
+            text-align: left;
+        }
+
+       
+        .sold-products-table tbody tr:hover {
+            background-color: #f1f1f1;
+        }
+
+        .sold-products-table th {
+            font-weight: bold;
+            color: white;
+        }
+
+        .sold-products-section h2 {
+            margin-bottom: 10px;
+            font-size: 1.5rem;
+        }
+    </style>
+
+    <section class="sold-products-section">
+        
+        <table class="sold-products-table">
+            <thead>
+                <tr>
+                    <th>Product</th>
+                    <th>Customer</th>
+                    <th>Sold Quantity</th>
+                    <th>Date</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php foreach ($sold as $product): ?>
+                <tr>
+                    <td><?= htmlspecialchars($product['product_name']) ?></td>
+                    <td><?= htmlspecialchars($product['buyer_name']) ?></td>
+                    <td><?= $product['sold_quantity'] ?></td>
+                    <td><?= date('d M Y', strtotime($product['order_date'])) ?></td>
+                </tr>
+                <?php endforeach; ?>
+            </tbody>
+        </table>
+    </section>
+    <?php
+    return ob_get_clean();
+}
+
+public function getProductsByStatus($userId, $status) {
+    $stmt = $this->conn->prepare("SELECT product_name, description, price, quantity, image_url, rating FROM products WHERE user_id = ? AND status = ?");
+    $stmt->bind_param("is", $userId, $status);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    return $result->fetch_all(MYSQLI_ASSOC); // returns array
+}
+public function getSoldProducts($userId) {
+    $stmt = $this->conn->prepare("
+        SELECT p.*, o.order_date, o.quantity AS sold_quantity, u.name AS buyer_name
+        FROM products p
+        INNER JOIN orders o ON p.id = o.product_id
+        INNER JOIN users u ON o.buyer_id = u.id
+        WHERE p.user_id = ? AND o.status = 'delivered'
+        ORDER BY o.order_date DESC
+    ");
+    $stmt->bind_param("i", $userId);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    
+    $soldProducts = [];
+    while ($row = $result->fetch_assoc()) {
+        $soldProducts[] = $row;
+    }
+
+    return $soldProducts;
+}
+
+        
+}  

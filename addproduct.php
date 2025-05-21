@@ -30,7 +30,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             VALUES ('$user_id', '$name', '$description', '$price', '$imagePath', '$quantity', 'in_stock', '$order_type', '$status')";
 
     if ($conn->query($sql)) {
-    echo "<script>alert('✅ Product added successfully!'); window.location.href = 'addproduct.php';</script>";
+    echo "<script>alert('✅ Product added successfully!'); window.location.href = 'seller_dashboard2.php';</script>";
 } else {
     echo "<script>alert('❌ Error: " . addslashes($conn->error) . "');</script>";
 }
