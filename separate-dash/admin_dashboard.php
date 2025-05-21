@@ -4,5 +4,5 @@ if (!isset($_SESSION['user_id'])) {
     header("Location: login.php");
     exit();
 }
-echo "Welcome to the Admin Dashboard!";
+echo "Welcome to the Admin Dashboard!hi";
 ?>
