@@ -4,7 +4,7 @@ if (!isset($_SESSION["loggedin"]) || $_SESSION["role"] !== 'seller') {
     header("Location:../login.php");
     exit();
 }
-require_once 'config.php';
+require_once  __DIR__ . "/../config/config.php";
 require_once 'partials/header.php';
 
 
