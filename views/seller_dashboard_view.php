@@ -58,6 +58,7 @@ require_once 'models/SellerModel.php';
     <!-- Recent Orders -->
    <?php
    echo $sellerModel->getRecentOrdersHTML( $userId);?>
+    
    <section class="motivational-quote">
         <h2>Motivational Quote</h2>
         <blockquote>"The secret of change is to focus all of your energy, not on fighting the old, but on building the new." - Socrates</blockquote>
@@ -69,7 +70,7 @@ echo $sellerModel->getFinancialLiteracyHTML();?>
 
     
 <script src = "js/script.js">
-</script>
+
 
 
 <?php require_once 'partials/footer.php'; ?>
