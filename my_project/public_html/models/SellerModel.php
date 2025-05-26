@@ -92,7 +92,7 @@ class SellerModel {
 
     public function getProducts($userId) {
         $stmt = $this->conn->prepare("
-            SELECT product_name, description, price, stock_status, quantity, image_url, rating
+            SELECT id,product_name, description, price, stock_status, quantity, image_url, rating
             FROM products
             WHERE user_id = ?
         ");
@@ -152,32 +152,37 @@ class SellerModel {
                 <?php foreach ($products as $row): 
                     $stockClass = ($row['quantity'] == 0) ? 'out-of-stock' : (($row['quantity'] <= 5) ? 'low-stock' : 'in-stock');
                 ?>
-                <div class="product-card <?php echo $stockClass; ?>">
-                    <div class="image-placeholder">
-                        <?php if (!empty($row['image_url'])): ?>
-                            <img src="<?php echo htmlspecialchars($row['image_url']); ?>" alt="<?php echo htmlspecialchars($row['product_name']); ?>" style="width:100%;height:auto;">
-                        <?php else: ?>
-                            <div style="background:#eee;width:100%;height:150px;"></div>
-                        <?php endif; ?>
-                    </div>
-                    <h3><?php echo htmlspecialchars($row['product_name']); ?></h3>
-                    <p class="product-description"><?php echo htmlspecialchars($row['description']); ?></p>
-                    <p>Stock: <?php echo $row['quantity']; ?> | <?php echo ucfirst($row['stock_status']); ?></p>
-                    <span>₹<?php echo number_format($row['price'], 2); ?></span>
-                    <div class="rating">
-                        <?php 
-                        $fullStars = floor($row['rating']);
-                        $halfStar = ($row['rating'] - $fullStars >= 0.5) ? 1 : 0;
-                        $emptyStars = 5 - $fullStars - $halfStar;
+               <div class="product-card <?php echo $stockClass; ?>">
+    <a href="productdetails.php?id=<?php echo $row['id']; ?>" style="text-decoration: none; color: inherit;">
+        <div class="image-placeholder">
+            <?php if (!empty($row['image_url'])): ?>
+                <img src="<?php echo htmlspecialchars($row['image_url']); ?>" alt="<?php echo htmlspecialchars($row['product_name']); ?>" style="width:100%;height:auto;">
+            <?php else: ?>
+                <div style="background:#eee;width:100%;height:150px;"></div>
+            <?php endif; ?>
+        </div>
+        <h3><?php echo htmlspecialchars($row['product_name']); ?></h3>
+        <p class="product-description"><?php echo htmlspecialchars($row['description']); ?></p>
+        <p>Stock: <?php echo $row['quantity']; ?> | <?php echo ucfirst($row['stock_status']); ?></p>
+        <span>₹<?php echo number_format($row['price'], 2); ?></span>
+        <div class="rating">
+            <?php 
+            $fullStars = floor($row['rating']);
+            $halfStar = ($row['rating'] - $fullStars >= 0.5) ? 1 : 0;
+            $emptyStars = 5 - $fullStars - $halfStar;
 
-                        echo str_repeat('⭐', $fullStars);
-                        if ($halfStar) echo '⭐';
-                        echo str_repeat('☆', $emptyStars);
-                        ?> (<?php echo number_format($row['rating'], 1); ?>)
-                    </div>
-                </div>
+            echo str_repeat('⭐', $fullStars);
+            if ($halfStar) echo '⭐';
+            echo str_repeat('☆', $emptyStars);
+            ?> (<?php echo number_format($row['rating'], 1); ?>)
+        </div>
+    </a>
+</div>
+
+                
                 <?php endforeach; ?>
             </div>
+            </section>
             <a href="view-products.php" class="view-all-btn"> View All Products</a>
 
         </section>
