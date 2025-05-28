@@ -2,7 +2,7 @@
 $productId = $_GET['id'];
 $result = $conn->query("SELECT * FROM products WHERE id = $productId");
 $product = $result->fetch_assoc();
-$imagePath = !empty($product['image_path']) ? $product['image_path'] : 'images/placeholder.png';
+$imagePath = !empty($product['image_url']) ? $product['image_url'] : 'images/placeholder.png';
 
 $conn->close();
 ?>
@@ -32,11 +32,13 @@ $conn->close();
     <div class="flex gap-6">
       <!-- Image -->
       <div class="relative">
-        <label id="uploadLabel" for="imageInput" class="absolute w-32 h-32 flex items-center justify-center text-3xl border rounded-xl text-purple-600 cursor-pointer bg-white">+</label>
-        <input type="file" name="image" id="imageInput" class="absolute w-full h-full opacity-0 cursor-pointer" onchange="previewImage(event)">
+        <?php if (empty($product['image_url'])): ?>
+          <label id="uploadLabel" for="imageInput" class="absolute w-32 h-32 flex items-center justify-center text-3xl border rounded-xl text-purple-600 cursor-pointer bg-white">+</label>
+        <?php endif; ?>
+        <input type="file" name="prod-img" id="imageInput" class="absolute w-full h-full opacity-0 cursor-pointer" onchange="previewImage(event)">
         <img id="productImage"
-     src="<?= htmlspecialchars($imagePath) ?>"
-     class="w-32 h-32 object-cover rounded-xl border" />
+             src="<?= htmlspecialchars($imagePath) ?>"
+             class="w-32 h-32 object-cover rounded-xl border <?= empty($product['image_url']) ? 'hidden' : '' ?>" />
       </div>
 
       <div class="flex-1 space-y-4">
@@ -92,4 +94,3 @@ $conn->close();
   </form>
 </body>
 </html>
-
