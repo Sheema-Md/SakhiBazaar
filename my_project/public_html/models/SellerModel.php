@@ -90,19 +90,7 @@ class SellerModel {
         return $orders;
     }
 
-    public function getProducts($userId) {
-        $stmt = $this->conn->prepare("
-            SELECT product_name, description, price, stock_status, quantity, image_url, rating
-            FROM products
-            WHERE user_id = ?
-        ");
-        $stmt->bind_param("i", $userId);
-        $stmt->execute();
-        $result = $stmt->get_result();
-        $products = $result ? $result->fetch_all(MYSQLI_ASSOC) : [];
-        $stmt->close();
-        return $products;
-    }
+    
 
     // ✅ HTML rendering method for recent orders
     public function getRecentOrdersHTML($userId) {
@@ -140,6 +128,31 @@ class SellerModel {
         </section>
         <?php return ob_get_clean();
     }
+    public function getProducts($userId, $limit = 6) {
+    $limit = (int)$limit; // ensure integer to prevent injection
+
+    $sql = "
+        SELECT id, product_name, description, price, stock_status, quantity, image_url, rating
+        FROM products
+        WHERE user_id = ?
+        ORDER BY id DESC
+        LIMIT $limit
+    ";
+
+    $stmt = $this->conn->prepare($sql);
+    if (!$stmt) {
+        throw new Exception("Prepare failed: " . $this->conn->error);
+    }
+
+    $stmt->bind_param("i", $userId);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $products = $result ? $result->fetch_all(MYSQLI_ASSOC) : [];
+    $stmt->close();
+
+    return $products;
+}
+
 
     // ✅ HTML rendering method for product cards
     public function getProductsHTML($userId) {
@@ -152,32 +165,37 @@ class SellerModel {
                 <?php foreach ($products as $row): 
                     $stockClass = ($row['quantity'] == 0) ? 'out-of-stock' : (($row['quantity'] <= 5) ? 'low-stock' : 'in-stock');
                 ?>
-                <div class="product-card <?php echo $stockClass; ?>">
-                    <div class="image-placeholder">
-                        <?php if (!empty($row['image_url'])): ?>
-                            <img src="<?php echo htmlspecialchars($row['image_url']); ?>" alt="<?php echo htmlspecialchars($row['product_name']); ?>" style="width:100%;height:auto;">
-                        <?php else: ?>
-                            <div style="background:#eee;width:100%;height:150px;"></div>
-                        <?php endif; ?>
-                    </div>
-                    <h3><?php echo htmlspecialchars($row['product_name']); ?></h3>
-                    <p class="product-description"><?php echo htmlspecialchars($row['description']); ?></p>
-                    <p>Stock: <?php echo $row['quantity']; ?> | <?php echo ucfirst($row['stock_status']); ?></p>
-                    <span>₹<?php echo number_format($row['price'], 2); ?></span>
-                    <div class="rating">
-                        <?php 
-                        $fullStars = floor($row['rating']);
-                        $halfStar = ($row['rating'] - $fullStars >= 0.5) ? 1 : 0;
-                        $emptyStars = 5 - $fullStars - $halfStar;
+               <div class="product-card <?php echo $stockClass; ?>">
+    <a href="productdetails.php?id=<?php echo $row['id']; ?>" style="text-decoration: none; color: inherit;">
+        <div class="image-placeholder">
+            <?php if (!empty($row['image_url'])): ?>
+                <img src="<?php echo htmlspecialchars($row['image_url']); ?>" alt="<?php echo htmlspecialchars($row['product_name']); ?>" style="width:100%;height:auto;">
+            <?php else: ?>
+                <div style="background:#eee;width:100%;height:150px;"></div>
+            <?php endif; ?>
+        </div>
+        <h3><?php echo htmlspecialchars($row['product_name']); ?></h3>
+        <p class="product-description"><?php echo htmlspecialchars($row['description']); ?></p>
+        <p>Stock: <?php echo $row['quantity']; ?> | <?php echo ucfirst($row['stock_status']); ?></p>
+        <span>₹<?php echo number_format($row['price'], 2); ?></span>
+        <div class="rating">
+            <?php 
+            $fullStars = floor($row['rating']);
+            $halfStar = ($row['rating'] - $fullStars >= 0.5) ? 1 : 0;
+            $emptyStars = 5 - $fullStars - $halfStar;
 
-                        echo str_repeat('⭐', $fullStars);
-                        if ($halfStar) echo '⭐';
-                        echo str_repeat('☆', $emptyStars);
-                        ?> (<?php echo number_format($row['rating'], 1); ?>)
-                    </div>
-                </div>
+            echo str_repeat('⭐', $fullStars);
+            if ($halfStar) echo '⭐';
+            echo str_repeat('☆', $emptyStars);
+            ?> (<?php echo number_format($row['rating'], 1); ?>)
+        </div>
+    </a>
+</div>
+
+                
                 <?php endforeach; ?>
             </div>
+            </section>
             <a href="view-products.php" class="view-all-btn"> View All Products</a>
 
         </section>
@@ -199,7 +217,8 @@ class SellerModel {
 }
 
 public function getDraftProductsHTML($userId) {
-    $stmt = $this->conn->prepare("SELECT product_name, description, price, quantity, image_url FROM products WHERE user_id = ? AND status = 'draft'");
+    $stmt = $this->conn->prepare("SELECT id, product_name, description, price, quantity, image_url FROM products WHERE user_id = ? AND status = 'draft'");
+
     $stmt->bind_param("i", $userId);
     $stmt->execute();
     $result = $stmt->get_result();
@@ -212,7 +231,8 @@ public function getDraftProductsHTML($userId) {
 while ($row = $result->fetch_assoc()) {
     $imagePath = !empty($row['image_url']) ? htmlspecialchars($row['image_url']) : '../images/placeholder.png';
 
-    $html .= '
+   $html .= '
+    <a href="productdetails.php?id=' . $row['id'] . '" style="text-decoration:none; color:inherit; display:block;">
         <div class="product-card">
             <div class="image-placeholder">
                 <img src="' . $imagePath . '" alt="' . htmlspecialchars($row['product_name']) . '" class="product-image">
@@ -221,7 +241,9 @@ while ($row = $result->fetch_assoc()) {
             <p>' . htmlspecialchars($row['description']) . '</p>
             <p><strong>Price:</strong> ₹' . htmlspecialchars($row['price']) . '</p>
             <p><strong>Quantity:</strong> ' . htmlspecialchars($row['quantity']) . '</p>
-        </div>';
+        </div>
+    </a>';
+
 }
 $html .= '</div>';
 return $html;
@@ -229,8 +251,8 @@ return $html;
 }
 
 public function getListedProductsHTML($userId) {
-    $products = $this->getProductsByStatus($userId, 'published');
-
+    $products = $this->getProductsByStatus($userId, 'published', 6);
+   
     
     ob_start(); ?>
      <section class="your-products">
@@ -242,6 +264,7 @@ public function getListedProductsHTML($userId) {
                 $stockClass = ($row['quantity'] == 0) ? 'out-of-stock' : (($row['quantity'] <= 5) ? 'low-stock' : 'in-stock');
                 $imagePath = !empty($row['image_url']) ?  $row['image_url'] : 'images/placeholder.png';
             ?>
+           <a href="productdetails.php?id=<?= $row['id'] ?>" style="text-decoration:none; color:inherit; display:block;">
             <div class="product-card <?php echo $stockClass; ?>">
                 <div class="image-placeholder">
                     <img src="<?php echo htmlspecialchars($imagePath); ?>" alt="<?php echo htmlspecialchars($row['product_name']); ?>" style="width:100%;height:auto;">
@@ -266,6 +289,7 @@ public function getListedProductsHTML($userId) {
                 </div>
                 
             </div>
+            </a>
             <?php endforeach?>
             </div>
             </section>
@@ -340,13 +364,33 @@ public function getSoldProductsHTML($userId) {
     return ob_get_clean();
 }
 
-public function getProductsByStatus($userId, $status) {
-    $stmt = $this->conn->prepare("SELECT product_name, description, price, quantity, image_url, rating FROM products WHERE user_id = ? AND status = ?");
+public function getProductsByStatus($userId, $status, $limit = 6) {
+    $limit = (int)$limit;  // ensure integer
+
+    // Use direct variable in query because LIMIT cannot be bound in MySQLi
+    $sql = "SELECT id, product_name, description, price, quantity, image_url, rating 
+            FROM products 
+            WHERE user_id = ? AND status = ? 
+            ORDER BY id DESC 
+            LIMIT $limit";
+
+    $stmt = $this->conn->prepare($sql);
+    if (!$stmt) {
+        // Optional: handle error gracefully
+        throw new Exception("Prepare failed: " . $this->conn->error);
+    }
+
     $stmt->bind_param("is", $userId, $status);
     $stmt->execute();
+
     $result = $stmt->get_result();
-    return $result->fetch_all(MYSQLI_ASSOC); // returns array
+    $products = $result->fetch_all(MYSQLI_ASSOC);
+
+    $stmt->close();
+
+    return $products;
 }
+
 public function getSoldProducts($userId) {
     $stmt = $this->conn->prepare("
         SELECT p.*, o.order_date, o.quantity AS sold_quantity, u.name AS buyer_name

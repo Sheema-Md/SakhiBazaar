@@ -1,7 +1,7 @@
 <?php 
 
 if (!isset($_SESSION["loggedin"]) || $_SESSION["role"] !== 'seller') {
-    header("Location:../login.php");
+    header("Location:login.php");
     exit();
 }?>
 <?php require_once 'partials/header.php'; ?>
@@ -69,7 +69,7 @@ echo $sellerModel->getFinancialLiteracyHTML();?>
 
 
     
-<script src = "js/script.js">
+<script src = "js/script.js"></script>
 
 
 
