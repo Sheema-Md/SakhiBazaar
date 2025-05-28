@@ -1,126 +1,96 @@
+<?php require_once __DIR__ . '/../config/config.php';
+$productId = $_GET['id'];
+$result = $conn->query("SELECT * FROM products WHERE id = $productId");
+$product = $result->fetch_assoc();
+$imagePath = !empty($product['image_url']) ? $product['image_url'] : 'images/placeholder.png';
+
+$conn->close();
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Edit Product – Sakhi Bazaar</title>
+  <meta charset="UTF-8">
+  <title>Edit Product</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
-    function confirmDelete() {
-      if (confirm("Are you sure you want to delete this product?")) {
-        // Simulate DB delete
-        console.log("Deleting product from DB...");
-        alert("Product deleted.");
-      }
-    }
-
-    function saveChanges() {
-      const data = {
-        name: document.getElementById('name').value,
-        category: document.getElementById('category').value,
-        price: document.getElementById('price').value,
-        stock: document.getElementById('stock').value,
-        description: document.getElementById('description').value,
-        // Optional: You can handle image upload with FormData
-      };
-
-      console.log('Saving to DB:', data);
-      alert('Changes saved!');
-    }
-
     function previewImage(event) {
-      const file = event.target.files[0];
       const reader = new FileReader();
       reader.onload = function () {
-        const output = document.getElementById('productImage');
-        output.src = reader.result;
+        const img = document.getElementById('productImage');
+        img.src = reader.result;
+        img.classList.remove('hidden');
+        document.getElementById('uploadLabel').classList.add('hidden');
       };
-      if (file) {
-        reader.readAsDataURL(file);
-      }
+      reader.readAsDataURL(event.target.files[0]);
     }
   </script>
 </head>
-<body class="bg-purple-50 min-h-screen flex items-center justify-center p-4">
-  <div class="w-full max-w-3xl bg-white shadow-xl rounded-2xl p-6 space-y-6">
-    
-    <!-- Product Overview -->
-    <div class="flex flex-col md:flex-row items-start gap-6">
-      
-      <!-- Image Upload -->
-      <div class="flex flex-col items-center space-y-2">
-        <label for="imageInput" class="cursor-pointer w-32 h-32 flex items-center justify-center rounded-xl border text-purple-600 text-3xl hover:bg-purple-100 transition">
-          +
-        </label>
-        <input type="file" accept="image/*" id="imageInput" onchange="previewImage(event)" class="hidden"/>
-        <img id="productImage" src="https://via.placeholder.com/150" alt="Product" class="w-32 h-32 rounded-xl object-cover border mt-2 hidden"/>
+<body class="bg-purple-50 p-8">
+  <form method="POST" enctype="multipart/form-data" action="save_product.php" class="max-w-3xl mx-auto bg-white shadow-xl p-6 rounded-xl space-y-4">
+    <input type="hidden" name="id" value="<?= $product['id'] ?>">
+
+    <div class="flex gap-6">
+      <!-- Image -->
+      <div class="relative">
+        <?php if (empty($product['image_url'])): ?>
+          <label id="uploadLabel" for="imageInput" class="absolute w-32 h-32 flex items-center justify-center text-3xl border rounded-xl text-purple-600 cursor-pointer bg-white">+</label>
+        <?php endif; ?>
+        <input type="file" name="prod-img" id="imageInput" class="absolute w-full h-full opacity-0 cursor-pointer" onchange="previewImage(event)">
+        <img id="productImage"
+             src="<?= htmlspecialchars($imagePath) ?>"
+             class="w-32 h-32 object-cover rounded-xl border <?= empty($product['image_url']) ? 'hidden' : '' ?>" />
       </div>
-      
+
       <div class="flex-1 space-y-4">
         <div>
-          <label for="name" class="block text-sm font-medium text-purple-800">Product Name</label>
-          <input id="name" type="text" value="Handwoven Cotton Saree"
-                 class="w-full mt-1 p-2 border rounded-md bg-purple-50 focus:outline-purple-500" />
+          <label class="block text-purple-800 font-medium">Product Name</label>
+          <input type="text" name="name" value="<?= htmlspecialchars($product['product_name']) ?>" class="w-full p-2 border rounded bg-purple-50">
         </div>
 
         <div>
-          <label for="category" class="block text-sm font-medium text-purple-800">Category</label>
-          <select id="category" class="w-full mt-1 p-2 border rounded-md bg-purple-50 focus:outline-purple-500">
-            <option value="Clothing">👗 Clothing</option>
-            <option value="Accessories">👜 Accessories</option>
-            <option value="Handicrafts">🪡 Handicrafts</option>
-            <option value="Home Decor">🏠 Home Decor</option>
-            <option value="Other">❔ Other</option>
-          </select>
-        </div>
-
-        <div>
-          <label for="price" class="block text-sm font-medium text-purple-800">Price</label>
-          <input id="price" type="text" value="₹1200"
-                 class="w-full mt-1 p-2 border rounded-md bg-purple-50 focus:outline-purple-500" />
-        </div>
-
-        <div>
-          <label for="stock" class="block text-sm font-medium text-purple-800">Stock Status</label>
-          <select id="stock" class="w-full mt-1 p-2 border rounded-md bg-purple-50 focus:outline-purple-500">
-            <option value="In Stock" selected>In Stock</option>
-            <option value="Out of Stock">Out of Stock</option>
+          <label class="block text-purple-800 font-medium">Category</label>
+          <select name="category" class="w-full p-2 border rounded bg-purple-50">
+            <?php
+              $categories = ["👗 Clothing", "👜 Accessories", "🪡 Handicrafts", "🏠 Home Decor", "❔Other"];
+              foreach ($categories as $cat) {
+                $selected = $product['category'] == $cat ? "selected" : "";
+                echo "<option value='$cat' $selected>$cat</option>";
+              }
+            ?>
           </select>
         </div>
       </div>
     </div>
 
-    <!-- Description -->
-    <div>
-      <label for="description" class="block text-sm font-medium text-purple-800">Description</label>
-      <textarea id="description" rows="4"
-                class="w-full mt-2 p-3 border rounded-md bg-purple-50 focus:outline-purple-500">
-A beautifully handcrafted cotton saree made by rural artisans. Perfect for festive occasions.
-      </textarea>
-    </div>
-      
-    <!-- Actions -->
-    <div class="flex flex-col sm:flex-row justify-end gap-4 pt-4 border-t">
-      <button onclick="saveChanges()"
-              class="bg-purple-600 text-white px-6 py-2 rounded-lg text-sm hover:bg-purple-700 transition">
-        Save Changes
-      </button>
-      <button onclick="confirmDelete()"
-              class="bg-red-500 text-white px-6 py-2 rounded-lg text-sm hover:bg-red-600 transition">
-        Delete Product
-      </button>
-    </div>
-    
-  </div>
+    <div class="grid grid-cols-2 gap-4">
+      <div>
+        <label class="block text-purple-800 font-medium">Price</label>
+        <input type="text" name="price" value="<?= htmlspecialchars($product['price']) ?>" class="w-full p-2 border rounded bg-purple-50">
+      </div>
 
-  <script>
-    // Show image preview box after selecting an image
-    document.getElementById('imageInput').addEventListener('change', () => {
-      const img = document.getElementById('productImage');
-      if (img.src) {
-        img.classList.remove('hidden');
-      }
-    });
-  </script>
+      <div>
+        <label class="block text-purple-800 font-medium">Stock Status</label>
+        <select name="stock" class="w-full p-2 border rounded bg-purple-50">
+          <option value="In Stock" <?= $product['stock_status'] == "In Stock" ? "selected" : "" ?>>In Stock</option>
+          <option value="Out of Stock" <?= $product['stock_status'] == "Out of Stock" ? "selected" : "" ?>>Out of Stock</option>
+        </select>
+      </div>
+
+      <div>
+        <label class="block text-purple-800 font-medium">Quantity</label>
+        <input type="number" name="quantity" value="<?= $product['quantity'] ?>" class="w-full p-2 border rounded bg-purple-50">
+      </div>
+    </div>
+
+    <div>
+      <label class="block text-purple-800 font-medium">Description</label>
+      <textarea name="description" rows="4" class="w-full p-3 border rounded bg-purple-50"><?= htmlspecialchars($product['description']) ?></textarea>
+    </div>
+
+    <div class="flex justify-between border-t pt-4">
+      <button type="submit" class="bg-purple-600 text-white px-6 py-2 rounded hover:bg-purple-700">Save Changes</button>
+      <a href="delete_product.php?id=<?= $product['id'] ?>" onclick="return confirm('Are you sure?')" class="bg-red-500 text-white px-6 py-2 rounded hover:bg-red-600">Delete Product</a>
+    </div>
+  </form>
 </body>
 </html>

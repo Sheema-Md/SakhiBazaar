@@ -1,5 +1,5 @@
 <?php
-require_once '/../config/config.php';
+require_once __DIR__ . '/../config/config.php';
 /*require_once 'vendor/autoload.php';  // Ensure this is included at the top
 require_once 'config.php';  // Your config file if any
 $client = new Google_Client();
@@ -326,7 +326,7 @@ z-index: 10;
             <div class="radio-container">
                 <label><input type="radio" name="role" value="seller" required> Seller</label>
                 <label><input type="radio" name="role" value="buyer"> Buyer</label>
-                <label><input type="radio" name="role" value="admin"> Admin</label>
+                
             </div>
 
             <div class="input-icon">
