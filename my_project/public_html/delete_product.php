@@ -13,6 +13,6 @@ if (!empty($row['image_url']) && file_exists($row['image_url'])) {
 $conn->query("DELETE FROM products WHERE id = $productId");
 $conn->close();
 
-header("Location: product-listing.php");
+header("Location: seller_dashboard2.php");
 exit;
 ?>

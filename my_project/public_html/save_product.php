@@ -1,5 +1,5 @@
 <?php require_once __DIR__ . '/../config/config.php';
-$id = $_POST['id'];
+$productId = $_POST['id'];
 $name = $_POST['name'];
 $category = $_POST['category'];
 $price = $_POST['price'];
@@ -17,7 +17,7 @@ if (!empty($_FILES['prod-img']['name'])) {
 
 // Update logic
 if ($imagePath) {
-    $stmt = $conn->prepare("UPDATE products SET product_name=?, category=?, price=?, stock_status=?, quantity=?, description=?, image_path=? WHERE id=?");
+    $stmt = $conn->prepare("UPDATE products SET product_name=?, category=?, price=?, stock_status=?, quantity=?, description=?, image_url=? WHERE id=?");
     $stmt->bind_param("ssdssssi", $name, $category, $price, $stock, $quantity, $description, $imagePath, $productId);
 } else {
     $stmt = $conn->prepare("UPDATE products SET product_name=?, category=?, price=?, stock_status=?, quantity=?, description=? WHERE id=?");
@@ -28,6 +28,6 @@ $stmt->execute();
 $stmt->close();
 $conn->close();
 
-header("Location: productdetails.php?id=" . $productId);
+header("Location: seller_dashboard2.php?id=" . $productId);
 exit;
 ?>
