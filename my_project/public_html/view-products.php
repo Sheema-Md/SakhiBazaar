@@ -138,6 +138,7 @@ $conn->close();
 
   <section class="your-products"> 
     <h2>Your Products</h2>
+    
     <div class="product-cards">
       <?php if (count($products) > 0): ?>
         <?php foreach ($products as $product): ?>
@@ -169,7 +170,9 @@ $conn->close();
             $description = htmlspecialchars($product['description']);
             $price = number_format(floatval($product['price']), 2);
           ?>
-          <div class="product-card <?= $stock_class ?>">
+          <a href="productdetails.php?id=<?= $product['id'] ?>" style="text-decoration:none; color:inherit; display:block;">
+  <div class="product-card <?= $stock_class ?>">
+
             <div class="image-placeholder">
               <img src="<?= $image_url ?>" alt="<?= $name ?>">
             </div>
@@ -184,6 +187,7 @@ $conn->close();
         <p style="text-align:center;">No products found for your account.</p>
       <?php endif; ?>
     </div>
+      </a>
   </section>
 </body>
 </html>   
