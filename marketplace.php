@@ -532,7 +532,7 @@
     mobileFilters.forEach(el => {
       el.addEventListener("change", () => {
         // Could add auto apply for mobile or leave for Done button
-        //applyFiltersMobile();
+        
       });
     });
   });
