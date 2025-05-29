@@ -7,20 +7,34 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
 <style>
   body {
-    margin: 0; font-family: Arial, sans-serif; background: #f8f8f8;
+    margin: 0; font-family: Arial, sans-serif; background:linear-gradient(#EDE4F0);
   }
   header {
-    background-color: #4b0082; color: white;
-    padding: 15px 20px;
-    display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;
-  }
-  .logo {
-    font-size: 24px; font-weight: bold; flex-shrink: 0;
-  }
+    background-color:  linear-gradient(#EDE4F0);
+ 
+  color: black;
+  padding: 15px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 15px;
+
+  max-width: 1200px;  /* or any width you want */
+  margin: auto;     /* centers the header */
+  width: 100%;        /* ensures responsive scaling */
+}
+.header-container {
+  max-width: 1200px; /* or whatever fits your layout */
+  margin: 0 auto;
+  padding: 0 16px; /* optional for spacing */
+}
+
+
   .search-container {
     display: flex; align-items: center; background: white;
     padding: 5px; border-radius: 5px;
-    width: 100%; max-width: 500px; flex-grow: 1; min-width: 250px;
+    width: 100%; max-width: 700px; flex-grow: 1; min-width: 250px;
   }
   .search-container input {
     border: none; outline: none; padding: 8px; flex: 1;
@@ -29,20 +43,53 @@
     color: gray; padding: 0 10px; cursor: pointer;
   }
   .icons {
-    display: flex; gap: 20px; font-size: 18px; flex-shrink: 0;
-  }
-  .main-content {
+  display: flex;
+  gap: 20px;
+  font-size: 18px;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center; /* Center the icons */
+}
+
+  .market-content {
     display: flex; padding: 20px; gap: 20px; flex-wrap: wrap;
   }
   /* Filter Sidebar - Desktop */
-  .filter-sidebar {
-    width: 250px;
-    background: #fff; padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 0 5px rgba(0,0,0,0.1);
-    flex-shrink: 0;
-    height: fit-content;
-  }
+  .sidebar-container {
+  display: flex;
+  gap: 20px; /* space between main sidebar and filter sidebar */
+  margin-bottom: 20px;
+}
+
+.content-wrapper {
+  display: flex;
+  gap: 20px;
+  flex-wrap: nowrap;
+  /* full width of main-content */
+}
+
+/* Filter sidebar next to fixed sidebar */
+.filter-sidebar {
+  width: 250px;
+  background: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: #EDE4F0;
+  flex-shrink: 0;
+  height: fit-content;
+}
+
+/* Products section fills remaining space */
+.products-section {
+  flex: 1;
+  min-width: 300px;
+}
+
+
+
+/* products-section stays as is */
+
+  
   .filter-group {
     margin-bottom: 15px;
   }
@@ -71,9 +118,7 @@
     background-color: #4b0082;
   }
   /* Products */
-  .products-section {
-    flex: 1; min-width: 300px;
-  }
+  
   h2 {
     margin-top: 0; margin-bottom: 15px; color: #333;
   }
@@ -108,36 +153,60 @@
     margin-left: 5px;
   }
   /* MOBILE: Entire filter sidebar shown top and toggled */
-  #mobileFilterWrapper {
+  /* Update: Filter button spacing */
+#filterToggleBtn {
+  display: none;
+  background-color: #4b0082;
+  color: white;
+  border: none;
+  padding: 12px 20px;
+  cursor: pointer;
+  font-weight: bold;
+  width: 100%;
+  margin: 10px 0; /* Updated spacing */
+  border-radius: 5px; /* Rounded for consistency */
+}
+
+/* Update: Mobile Filter Wrapper toggling */
+#mobileFilterWrapper {
+  display: none;
+  background: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  transition: all 0.3s ease-in-out;
+}
+
+#mobileFilterWrapper.active {
+  display: block;
+}
+
+/* Update: Dynamic Filter Selects */
+.filter-group select,
+.filter-group input {
+  font-size: 14px;
+}
+
+/* Responsive layout tweaks */
+
+@media (max-width: 768px) {
+  .market-content {
+    flex-direction: column;
+    padding: 10px;
+  }
+  .filter-sidebar {
     display: none;
-    background: #fff;
-    padding: 15px 20px;
-    border-radius: 0 0 8px 8px;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
   }
   #filterToggleBtn {
-    display: none;
-    background-color: #4b0082;
-    color: white;
-    border: none;
-    padding: 12px 20px;
-    border-radius: 0;
-    cursor: pointer;
-    font-weight: bold;
-    width: 100%;
-    margin-bottom: 10px;
+    display: block;
   }
-  @media (max-width: 768px) {
-    .main-content {
-      flex-direction: column;
-      padding: 10px;
-    }
-    .filter-sidebar {
-      display: none;
-    }
-    #filterToggleBtn {
-      display: block;
-    }
+  .products-section {
+    min-width: 100%;
+  }
+  .filter-group {
+    margin-bottom: 15px;
+  }
+  
     #mobileFilterWrapper {
       display: none;
       margin-bottom: 10px;
@@ -145,16 +214,14 @@
     #mobileFilterWrapper.active {
       display: block;
     }
-    .products-section {
-      min-width: 100%;
-    }
+    
   }
 </style>
 </head>
 <body>
-
+<div class="header-container">
 <header>
-  <div class="logo">Sakhi Bazaar</div>
+  
   <div class="search-container">
     <input type="text" id="searchBox" placeholder="Search products..." />
     <i class="fas fa-camera" title="Search by camera"></i>
@@ -163,20 +230,23 @@
   <div class="icons">
     <i class="fas fa-heart" title="Wishlist"></i>
     <i class="fas fa-shopping-cart" title="Cart"></i>
-    <i class="fas fa-bell" title="Notifications"></i>
+    
   </div>
 </header>
-
+</div>
 <button id="filterToggleBtn" onclick="toggleMobileFilters()">Show Filters &#x25BC;</button>
 
-<div class="main-content">
+<div class="market-content">
 
   <!-- Desktop Sidebar -->
+   <div class="content-wrapper">
+
   <aside class="filter-sidebar" id="filterSidebar">
     <h3>Filters</h3>
     <div class="filter-group">
-      <label for="categoryFilter">Category</label>
-      <select id="categoryFilter" onchange="updateFilterOptions('desktop')">
+      <label for="categoryFilter"><i class="fas fa-tags"></i> Category</label>
+
+      <select id="categoryFilter" onchange="updateFilterOptions()">
         <option value="All">All</option>
         <option value="Clothing">Clothing</option>
         <option value="Accessories">Accessories</option>
@@ -190,13 +260,14 @@
     </div>
 
     <div class="filter-group">
-      <label>Price Range (₹)</label>
+      <label for="minPrice"><i class="fas fa-rupee-sign"></i> Price Range (₹)</label>
+
       <input type="number" id="minPrice" placeholder="Min" min="0" />
       <input type="number" id="maxPrice" placeholder="Max" min="0" style="margin-top:5px;" />
     </div>
 
     <div class="filter-group">
-      <label for="ratingFilter">Rating</label>
+      <label for="ratingFilter"><i class="fas fa-star"></i> Rating</label>
       <select id="ratingFilter">
         <option value="0">All</option>
         <option value="4">4★ & above</option>
@@ -209,12 +280,15 @@
       <button onclick="applyFilters()">Done</button>
     </div>
   </aside>
+</div>
 
   <!-- Mobile Filter Wrapper: same filters as desktop but with unique IDs -->
   <div id="mobileFilterWrapper">
     <h3>Filters</h3>
     <div class="filter-group">
-      <label for="categoryFilterMobile">Category</label>
+      <label for="categoryFilter"><i class="fas fa-tags"></i> Category</label>
+
+
       <select id="categoryFilterMobile" onchange="updateFilterOptions('mobile')">
         <option value="All">All</option>
         <option value="Clothing">Clothing</option>
@@ -229,13 +303,14 @@
     </div>
 
     <div class="filter-group">
-      <label>Price Range (₹)</label>
+      <label for="minPrice"><i class="fas fa-rupee-sign"></i> Price Range (₹)</label>
       <input type="number" id="minPriceMobile" placeholder="Min" min="0" />
       <input type="number" id="maxPriceMobile" placeholder="Max" min="0" style="margin-top:5px;" />
     </div>
 
     <div class="filter-group">
-      <label for="ratingFilterMobile">Rating</label>
+      
+<label for="ratingFilter"><i class="fas fa-star"></i> Rating</label>
       <select id="ratingFilterMobile">
         <option value="0">All</option>
         <option value="4">4★ & above</option>
@@ -300,7 +375,12 @@
 </div>
 
 <script>
-  // All possible dynamic filter fields with their possible options per category:
+  // Initialize filters when DOM is ready
+document.addEventListener("DOMContentLoaded", () => {
+  updateFilterOptions("desktop");
+  updateFilterOptions("mobile");
+});
+
   const dynamicFilterData = {
     Clothing: {
       Size: ["Small", "Medium", "Large"],
@@ -321,20 +401,55 @@
     }
   };
 
+  function toggleMobileFilters() {
+    const wrapper = document.getElementById("mobileFilterWrapper");
+    const btn = document.getElementById("filterToggleBtn");
+    wrapper.classList.toggle("active");
+    btn.innerHTML = wrapper.classList.contains("active")
+      ? "Hide Filters &#x25B2;"
+      : "Show Filters &#x25BC;";
+  }
+
+ function updateFilterOptions(mode = "desktop") {
+  const categoryId = mode === "mobile" ? "categoryFilterMobile" : "categoryFilter";
+  const containerId = mode === "mobile" ? "dynamicFiltersMobile" : "dynamicFiltersDesktop";
+
+  const selectedCategory = document.getElementById(categoryId).value;
+  const dynamicFilterContainer = document.getElementById(containerId);
+  dynamicFilterContainer.innerHTML = "";
+
+  if (!selectedCategory || !dynamicFilterData[selectedCategory]) return;
+
+  const filters = dynamicFilterData[selectedCategory];
+  for (const [filterName, options] of Object.entries(filters)) {
+    const label = document.createElement("label");
+    label.textContent = filterName;
+    const select = document.createElement("select");
+    select.dataset.filterName = filterName; // Important for filtering
+    select.innerHTML = `<option value="All">All</option>`;
+    options.forEach(option => {
+      const opt = document.createElement("option");
+      opt.value = option;
+      opt.textContent = option;
+      select.appendChild(opt);
+    });
+    const group = document.createElement("div");
+    group.classList.add("filter-group");
+    group.appendChild(label);
+    group.appendChild(select);
+    dynamicFilterContainer.appendChild(group);
+  }
+}
+
+
   function clearFilters() {
-    // Clear desktop filters
     document.getElementById("categoryFilter").value = "All";
     document.getElementById("minPrice").value = "";
     document.getElementById("maxPrice").value = "";
     document.getElementById("ratingFilter").value = "0";
+    updateFilterOptions("desktop");
 
-    // Clear dynamic desktop filters
-    const dynamicContainer = document.getElementById("dynamicFiltersDesktop");
-    dynamicContainer.querySelectorAll("select").forEach(sel => sel.value = "All");
-
-    // Clear mobile filters too
     clearFiltersMobile();
-
     applyFilters();
   }
 
@@ -343,199 +458,74 @@
     document.getElementById("minPriceMobile").value = "";
     document.getElementById("maxPriceMobile").value = "";
     document.getElementById("ratingFilterMobile").value = "0";
-
-    const dynamicContainer = document.getElementById("dynamicFiltersMobile");
-    dynamicContainer.querySelectorAll("select").forEach(sel => sel.value = "All");
+    updateFilterOptions("mobile");
   }
 
-  // Toggle mobile filter display
-  function toggleMobileFilters() {
-    const wrapper = document.getElementById("mobileFilterWrapper");
-    const btn = document.getElementById("filterToggleBtn");
-    if(wrapper.classList.contains("active")) {
-      wrapper.classList.remove("active");
-      btn.innerHTML = "Show Filters &#x25BC;";
-    } else {
-      wrapper.classList.add("active");
-      btn.innerHTML = "Hide Filters &#x25B2;";
-    }
-  }
-
-  // Update dynamic filters based on category, source indicates desktop/mobile for syncing
-  function updateFilterOptions(source) {
-    let category, container;
-    if (source === "mobile") {
-      category = document.getElementById("categoryFilterMobile").value;
-      container = document.getElementById("dynamicFiltersMobile");
-    } else {
-      category = document.getElementById("categoryFilter").value;
-      container = document.getElementById("dynamicFiltersDesktop");
-    }
-
-    // Clear current dynamic filters container
-    container.innerHTML = "";
-
-    if(category === "All" || !dynamicFilterData[category]) {
-      // No dynamic filters for "All" or unknown
-      return;
-    }
-
-    // Create selects for each dynamic filter
-    const filters = dynamicFilterData[category];
-    for(let filterName in filters) {
-      const options = filters[filterName];
-      const groupDiv = document.createElement("div");
-      groupDiv.className = "filter-group";
-
-      const label = document.createElement("label");
-      label.textContent = filterName;
-      label.setAttribute("for", filterName + (source === "mobile" ? "Mobile" : ""));
-
-      const select = document.createElement("select");
-      select.id = filterName + (source === "mobile" ? "Mobile" : "");
-      select.dataset.filterName = filterName;
-      // Add "All" option
-      const allOpt = document.createElement("option");
-      allOpt.value = "All";
-      allOpt.textContent = "All";
-      select.appendChild(allOpt);
-
-      options.forEach(opt => {
-        const optionEl = document.createElement("option");
-        optionEl.value = opt;
-        optionEl.textContent = opt;
-        select.appendChild(optionEl);
-      });
-
-      groupDiv.appendChild(label);
-      groupDiv.appendChild(select);
-      container.appendChild(groupDiv);
-    }
-  }
-
-  // Synchronize filters desktop -> mobile and vice versa (for all filters)
-  function syncFilters(sourceToTarget) {
-    if(sourceToTarget === "desktopToMobile") {
-      document.getElementById("categoryFilterMobile").value = document.getElementById("categoryFilter").value;
-      document.getElementById("minPriceMobile").value = document.getElementById("minPrice").value;
-      document.getElementById("maxPriceMobile").value = document.getElementById("maxPrice").value;
-      document.getElementById("ratingFilterMobile").value = document.getElementById("ratingFilter").value;
-
-      // Sync dynamic filters
-      const desktopDynFilters = document.querySelectorAll("#dynamicFiltersDesktop select");
-      const mobileDynFilters = document.querySelectorAll("#dynamicFiltersMobile select");
-      desktopDynFilters.forEach((sel, i) => {
-        if(mobileDynFilters[i]) mobileDynFilters[i].value = sel.value;
-      });
-
-    } else {
-      // mobileToDesktop
-      document.getElementById("categoryFilter").value = document.getElementById("categoryFilterMobile").value;
-      document.getElementById("minPrice").value = document.getElementById("minPriceMobile").value;
-      document.getElementById("maxPrice").value = document.getElementById("maxPriceMobile").value;
-      document.getElementById("ratingFilter").value = document.getElementById("ratingFilterMobile").value;
-
-      const desktopDynFilters = document.querySelectorAll("#dynamicFiltersDesktop select");
-      const mobileDynFilters = document.querySelectorAll("#dynamicFiltersMobile select");
-      mobileDynFilters.forEach((sel, i) => {
-        if(desktopDynFilters[i]) desktopDynFilters[i].value = sel.value;
-      });
-    }
-  }
-
-  // Main filter function for desktop filters
   function applyFilters() {
-    // Sync desktop filters to mobile before filtering
-    syncFilters("desktopToMobile");
-
     const category = document.getElementById("categoryFilter").value;
     const minPrice = parseFloat(document.getElementById("minPrice").value) || 0;
     const maxPrice = parseFloat(document.getElementById("maxPrice").value) || Infinity;
-    const ratingFilter = parseInt(document.getElementById("ratingFilter").value) || 0;
+    const minRating = parseInt(document.getElementById("ratingFilter").value) || 0;
 
-    // Get dynamic filter values from desktop
+    const dynamicFilterElements = document.querySelectorAll("#dynamicFiltersDesktop select");
     const dynamicFilters = {};
-    document.querySelectorAll("#dynamicFiltersDesktop select").forEach(sel => {
-      const key = sel.dataset.filterName;
-      dynamicFilters[key] = sel.value;
+    dynamicFilterElements.forEach(select => {
+      if (select.value !== "All") {
+        dynamicFilters[select.dataset.filterName.toLowerCase()] = select.value;
+      }
     });
 
-    const products = document.querySelectorAll("#productList .product-card");
+    document.querySelectorAll(".product-card").forEach(card => {
+      const cardCategory = card.dataset.category;
+      const cardPrice = parseFloat(card.dataset.price);
+      const cardRating = parseInt(card.dataset.rating);
 
-    products.forEach(product => {
-      const productCategory = product.getAttribute("data-category");
-      const productPrice = parseFloat(product.getAttribute("data-price"));
-      const productRating = parseInt(product.getAttribute("data-rating"));
+      let show = true;
 
-      // Category match
-      let categoryMatch = (category === "All" || productCategory === category);
+      if (category !== "All" && category !== cardCategory) show = false;
+      if (cardPrice < minPrice || cardPrice > maxPrice) show = false;
+      if (cardRating < minRating) show = false;
 
-      // Price match
-      let priceMatch = (productPrice >= minPrice && productPrice <= maxPrice);
-
-      // Rating match
-      let ratingMatch = (productRating >= ratingFilter);
-
-      // Dynamic filters match
-      let dynamicMatch = true;
-      for(const key in dynamicFilters) {
-        const filterValue = dynamicFilters[key];
-        if(filterValue !== "All") {
-          const productVal = product.getAttribute("data-" + key.toLowerCase());
-          if(!productVal || productVal !== filterValue) {
-            dynamicMatch = false;
-            break;
-          }
+      for (let key in dynamicFilters) {
+        const value = card.dataset[key];
+        if (value !== dynamicFilters[key]) {
+          show = false;
+          break;
         }
       }
 
-      // Show or hide product
-      product.style.display = (categoryMatch && priceMatch && ratingMatch && dynamicMatch) ? "block" : "none";
+      card.style.display = show ? "flex" : "none";
     });
   }
 
-  // Apply filters from mobile inputs
   function applyFiltersMobile() {
-    // Sync mobile filters to desktop
     syncFilters("mobileToDesktop");
-
-    // Update dynamic filters on desktop (so filters are visible and synced)
-    updateFilterOptions("desktop");
-
-    // Apply filters
     applyFilters();
-
-    // Hide mobile filters after applying
     toggleMobileFilters();
   }
 
-  // Initialize on page load
-  window.addEventListener("DOMContentLoaded", () => {
-    // Initialize dynamic filters on desktop and mobile
-    updateFilterOptions("desktop");
-    updateFilterOptions("mobile");
+ function syncFilters(direction) {
+  const from = direction === "mobileToDesktop" ? "Mobile" : "";
+  const to = direction === "mobileToDesktop" ? "" : "Mobile";
 
-    // Sync initial values
-    syncFilters("desktopToMobile");
+  document.getElementById("categoryFilter" + to).value = document.getElementById("categoryFilter" + from).value;
+  document.getElementById("minPrice" + to).value = document.getElementById("minPrice" + from).value;
+  document.getElementById("maxPrice" + to).value = document.getElementById("maxPrice" + from).value;
+  document.getElementById("ratingFilter" + to).value = document.getElementById("ratingFilter" + from).value;
 
-    // Apply filters initially
-    applyFilters();
+  updateFilterOptions(to === "Mobile" ? "mobile" : "desktop");
+}
 
-    // Add event listeners to all filters to auto-apply on change (optional)
-    const desktopFilters = document.querySelectorAll("#filterSidebar select, #filterSidebar input");
-    desktopFilters.forEach(el => {
-      el.addEventListener("change", applyFilters);
-      el.addEventListener("input", applyFilters);
+  function searchProducts() {
+    const query = document.getElementById("searchBox").value.toLowerCase();
+    document.querySelectorAll(".product-card").forEach(card => {
+      const text = card.textContent.toLowerCase();
+      card.style.display = text.includes(query) ? "flex" : "none";
     });
+  }
 
-    const mobileFilters = document.querySelectorAll("#mobileFilterWrapper select, #mobileFilterWrapper input");
-    mobileFilters.forEach(el => {
-      el.addEventListener("change", () => {
-        // Could add auto apply for mobile or leave for Done button
-        
-      });
-    });
-  });
+  // Init
+
 </script>
 
 </body>

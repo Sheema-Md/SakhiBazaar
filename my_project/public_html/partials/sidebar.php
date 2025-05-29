@@ -23,24 +23,25 @@
 </div>
 
   </a>
-  <a href="marketplace.php" class="<?= $current_page === 'marketplace.php' ? 'active' : '' ?>">
-    <i class="fas fa-store"></i> Marketplace
-  </a>
-  <a href="transactions.php" class="<?= $current_page === 'transactions.php' ? 'active' : '' ?>">
-    <i class="fas fa-money-check-alt"></i> Transactions
-  </a>
-  <a href="finance-literacy.php" class="<?= $current_page === 'finance-literacy.php' ? 'active' : '' ?>">
-    <i class="fas fa-chart-line"></i> Finance & Literacy
-  </a>
-  <a href="help-support.php" class="<?= $current_page === 'help-support.php' ? 'active' : '' ?>">
-    <i class="fas fa-headset"></i> Help & Support
-  </a>
-  <a href="success-stories.php" class="<?= $current_page === 'success-stories.php' ? 'active' : '' ?>">
-    <i class="fas fa-book"></i> Success Stories
-  </a>
-  <a href="settings.php" class="<?= $current_page === 'settings.php' ? 'active' : '' ?>">
-    <i class="fas fa-cog"></i> Settings
-  </a>
+ <a href="#" class="sidebar-link" data-url="market.php"> 
+  <i class="fas fa-store"></i> Marketplace
+</a>
+<a href="#" class="sidebar-link" data-url="transactions.php">
+  <i class="fas fa-money-check-alt"></i> Transactions
+</a>
+<a href="#" class="sidebar-link" data-url="finance-literacy.php">
+  <i class="fas fa-chart-line"></i> Finance & Literacy
+</a>
+<a href="#" class="sidebar-link" data-url="help-support.php">
+  <i class="fas fa-headset"></i> Help & Support
+</a>
+<a href="#" class="sidebar-link" data-url="success-stories.php">
+  <i class="fas fa-book"></i> Success Stories
+</a>
+<a href="#" class="sidebar-link" data-url="settings.php">
+  <i class="fas fa-cog"></i> Settings
+</a>
+
 </nav>
 
       <div class="logout-section">
@@ -55,4 +56,18 @@ document.getElementById('product-listing-toggle').addEventListener('click', func
     const submenu = document.getElementById('product-listing-submenu');
     submenu.style.display = (submenu.style.display === 'block') ? 'none' : 'block';
 });
+
+  document.querySelectorAll('.sidebar-link').forEach(link => {
+    link.addEventListener('click', function(e) {
+      e.preventDefault();
+      const url = this.getAttribute('data-url');
+      fetch(url)
+        .then(response => response.text())
+        .then(html => {
+          document.querySelector('.main-content').innerHTML = html;
+
+        });
+    });
+  });
+
 </script>

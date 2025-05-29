@@ -1,4 +1,6 @@
 // Sidebar toggle and overlay logic
+
+
 document.addEventListener('DOMContentLoaded', () => {
   const hamburger = document.getElementById('hamburger-btn');
   const sidebar = document.getElementById('sidebar');
@@ -89,14 +91,4 @@ document.addEventListener('DOMContentLoaded', () => {
 
   applySavedLanguage();
 });
- function togglePanel() {
-      const panel = document.getElementById('productPanel');
-      panel.style.display = panel.style.display === 'flex' ? 'none' : 'flex';
-    }
-
-    function switchTab(tabId) {
-      document.querySelectorAll('.tab-content').forEach(tab => {
-        tab.classList.remove('active');
-      });
-      document.getElementById(tabId).classList.add('active');
-    }
+ 
