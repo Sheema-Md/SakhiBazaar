@@ -2,7 +2,6 @@
 
 # Ignore the directory containing sensitive configuration
 /config/
-
 /uploads/
 
 /duplicates/
