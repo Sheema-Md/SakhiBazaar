@@ -2,7 +2,11 @@
 
 # Ignore the directory containing sensitive configuration
 /config/
-
+/seller_dash_dup/
+/uploads/
+/seller_dashboard_sample/
+/seller_dashboard/
+/product1/
 # You can add other files/folders you don't want in Git
 # Thumbs.db        # Windows thumbnail cache
 # .DS_Store       # macOS specific

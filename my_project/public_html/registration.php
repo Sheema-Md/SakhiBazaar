@@ -1,13 +1,6 @@
 <?php
 require_once __DIR__ . '/../config/config.php';
-/*require_once 'vendor/autoload.php';  // Ensure this is included at the top
-require_once 'config.php';  // Your config file if any
-$client = new Google_Client();
-$client->setAuthConfig(); 
-$client->addScope('email');
-$client->addScope('profile');
 
-$google_auth_url = $client->createAuthUrl();*/
 session_start();
 $registration_error = "";
 $registration_success = "";
