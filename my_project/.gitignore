@@ -6,7 +6,7 @@
 /uploads/
 
 /duplicates/
-/product1.html
+
 # You can add other files/folders you don't want in Git
 # Thumbs.db        # Windows thumbnail cache
 # .DS_Store       # macOS specific
