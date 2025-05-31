@@ -1,52 +1,10 @@
-<?php 
-session_start();
-if (!isset($_SESSION["loggedin"]) || $_SESSION["role"] !== 'seller') {
-    header("Location:../login.php");
-    exit();
-}
-require_once  __DIR__ . "/../config/config.php";
-require_once 'partials/header.php';
-
-
-require_once 'partials/sidebar.php';?>
-<div class="overlay" id="overlay"></div>
-<?php
-require_once 'models/SellerModel.php';
-$user_id = $_SESSION['id'];
-
-// or however you get the seller id
-$sellerModel = new SellerModel($conn);
-$data = [
-    'name' => $sellerModel->getSellerName($user_id),];
-?>
-
-
-  
-
-<main class="main-content">
-    <header class="topbar">
-        
-
-        <button class="hamburger" id="hamburger-btn"><i class="fas fa-bars"></i></button>
-        
-        <select class="language-select">
-            <option>English</option>
-            <option>Telugu</option>
-            <option>Hindi</option>
-            <option>Urdu</option>
-        </select>
-        <i class="fas fa-bell notification-icon"><span class="badge">3</span></i>
-        <a href = "sellerprofile.php"  "style="text-decoration:none; color:inherit; display:block;">
-        <div class="profile-name"><?php echo htmlspecialchars($data['name']); ?></div></a>
-
-    </header>
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Sakhi Bazaar - Responsive Filters</title>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
 <style>
   body {
     margin: 0; font-family: Arial, sans-serif; background:linear-gradient(#EDE4F0);
@@ -438,33 +396,32 @@ $data = [
   <div class="product-card" data-category="Clothing" data-price="499" data-rating="4">
     <img src="https://images.unsplash.com/photo-1618354691210-2f4a22ab10c6?auto=format&fit=crop&w=150&q=80" alt="Silk Kurti" />
     <p>Silk Kurti</p>
-    <p><del>₹799</del> <strong>₹499</strong></p>
-<span style="color: green; font-weight: bold;">38% OFF</span>
-
+    <p><strong>₹499</strong></p>
     <div class="product-buttons">
       <button>Add to Cart</button>
       <button class="wishlist" title="Add to Wishlist">&#9825;</button>
     </div>
   </div>
-  
+  <p><del>₹799</del> <strong>₹499</strong></p>
+<span style="color: green; font-weight: bold;">38% OFF</span>
+
   <!-- Add more product cards horizontally -->
    <div class="product-card" data-category="Clothing" data-price="499" data-rating="4">
     <img src="https://images.unsplash.com/photo-1618354691210-2f4a22ab10c6?auto=format&fit=crop&w=150&q=80" alt="Silk Kurti" />
     <p>Silk Kurti</p>
-    <p><del>₹799</del> <strong>₹499</strong></p>
-<span style="color: green; font-weight: bold;">38% OFF</span>
+    <p><strong>₹499</strong></p>
     <div class="product-buttons">
       <button>Add to Cart</button>
       <button class="wishlist" title="Add to Wishlist">&#9825;</button>
     </div>
   </div>
-  
+  <p><del>₹799</del> <strong>₹499</strong></p>
+<span style="color: green; font-weight: bold;">38% OFF</span>
 
   <div class="product-card" data-category="Clothing" data-price="499" data-rating="4">
     <img src="https://images.unsplash.com/photo-1618354691210-2f4a22ab10c6?auto=format&fit=crop&w=150&q=80" alt="Silk Kurti" />
     <p>Silk Kurti</p>
-    <p><del>₹799</del> <strong>₹499</strong></p>
-<span style="color: green; font-weight: bold;">38% OFF</span>
+    <p><strong>₹499</strong></p>
     <div class="product-buttons">
       <button>Add to Cart</button>
       <button class="wishlist" title="Add to Wishlist">&#9825;</button>
@@ -475,7 +432,8 @@ $data = [
   </div> <!-- end scroll-wrapper -->
   <button class="scroll-arrow right" onclick="scrollDeals('right')">&#9654;</button>
 </div> <!-- end scrollable-container -->
-
+<p><del>₹799</del> <strong>₹499</strong></p>
+<span style="color: green; font-weight: bold;">38% OFF</span>
 
     <h2>💼 Products For You</h2>
     <div class="product-grid" id="productList">
@@ -512,134 +470,167 @@ $data = [
 
 </div>
 
-<!-- (All of your HTML markup remains mostly unchanged up to the end of your current script tag) -->
 <script>
-function toggleMobileFilters() {
-  const wrapper = document.getElementById("mobileFilterWrapper");
-  wrapper.classList.toggle("active");
-}
-
-function updateFilterOptions(view = "desktop") {
-  const category = document.getElementById(view === "mobile" ? "categoryFilterMobile" : "categoryFilter").value;
-  const filterContainer = document.getElementById(view === "mobile" ? "dynamicFiltersMobile" : "dynamicFiltersDesktop");
-  filterContainer.innerHTML = "";
-
-  const filters = dynamicFilterData[category];
-  if (!filters) return;
-
-  for (const [label, options] of Object.entries(filters)) {
-    const group = document.createElement("div");
-    group.className = "filter-group";
-
-    const labelElem = document.createElement("label");
-    labelElem.textContent = label;
-    group.appendChild(labelElem);
-
-    const select = document.createElement("select");
-    select.id = `${label.toLowerCase()}Filter${view === "mobile" ? "Mobile" : ""}`;
-    select.innerHTML = '<option value="">All</option>' + options.map(opt => `<option value="${opt}">${opt}</option>`).join("");
-
-    group.appendChild(select);
-    filterContainer.appendChild(group);
-  }
-}
-
-function applyFilters() {
-  const category = document.getElementById("categoryFilter").value;
-  const minPrice = parseInt(document.getElementById("minPrice").value) || 0;
-  const maxPrice = parseInt(document.getElementById("maxPrice").value) || Infinity;
-  const rating = parseInt(document.getElementById("ratingFilter").value);
-
-  const dynamicFilters = document.querySelectorAll("#dynamicFiltersDesktop select");
-  const filterValues = {};
-  dynamicFilters.forEach(select => {
-    if (select.value) {
-      filterValues[select.previousSibling.textContent.trim()] = select.value;
-    }
-  });
-
-  document.querySelectorAll(".product-card").forEach(card => {
-    const matchesCategory = category === "All" || card.dataset.category === category;
-    const price = parseInt(card.dataset.price);
-    const matchesPrice = price >= minPrice && price <= maxPrice;
-    const matchesRating = parseInt(card.dataset.rating) >= rating;
-    const matchesDynamic = Object.entries(filterValues).every(([key, val]) => card.dataset[key.toLowerCase()] === val);
-
-    card.style.display = matchesCategory && matchesPrice && matchesRating && matchesDynamic ? "block" : "none";
-  });
-}
-
-function clearFilters() {
-  document.getElementById("categoryFilter").value = "All";
-  document.getElementById("minPrice").value = "";
-  document.getElementById("maxPrice").value = "";
-  document.getElementById("ratingFilter").value = "0";
-  document.getElementById("dynamicFiltersDesktop").innerHTML = "";
+  // Initialize filters when DOM is ready
+document.addEventListener("DOMContentLoaded", () => {
   updateFilterOptions("desktop");
-  applyFilters();
-}
-
-function applyFiltersMobile() {
-  // mirror of applyFilters, but using mobile inputs
-  const category = document.getElementById("categoryFilterMobile").value;
-  const minPrice = parseInt(document.getElementById("minPriceMobile").value) || 0;
-  const maxPrice = parseInt(document.getElementById("maxPriceMobile").value) || Infinity;
-  const rating = parseInt(document.getElementById("ratingFilterMobile").value);
-
-  const dynamicFilters = document.querySelectorAll("#dynamicFiltersMobile select");
-  const filterValues = {};
-  dynamicFilters.forEach(select => {
-    if (select.value) {
-      filterValues[select.previousSibling.textContent.trim()] = select.value;
-    }
-  });
-
-  document.querySelectorAll(".product-card").forEach(card => {
-    const matchesCategory = category === "All" || card.dataset.category === category;
-    const price = parseInt(card.dataset.price);
-    const matchesPrice = price >= minPrice && price <= maxPrice;
-    const matchesRating = parseInt(card.dataset.rating) >= rating;
-    const matchesDynamic = Object.entries(filterValues).every(([key, val]) => card.dataset[key.toLowerCase()] === val);
-
-    card.style.display = matchesCategory && matchesPrice && matchesRating && matchesDynamic ? "block" : "none";
-  });
-}
-
-function clearFiltersMobile() {
-  document.getElementById("categoryFilterMobile").value = "All";
-  document.getElementById("minPriceMobile").value = "";
-  document.getElementById("maxPriceMobile").value = "";
-  document.getElementById("ratingFilterMobile").value = "0";
-  document.getElementById("dynamicFiltersMobile").innerHTML = "";
   updateFilterOptions("mobile");
-  applyFiltersMobile();
-}
+});
 
-function scrollDeals(direction) {
-  const wrapper = document.getElementById('dailyDealsWrapper');
-  const scrollAmount = 300;
-  wrapper.scrollLeft += (direction === 'left' ? -scrollAmount : scrollAmount);
-}
+  const dynamicFilterData = {
+    Clothing: {
+      Size: ["Small", "Medium", "Large"],
+      Fabric: ["Cotton", "Silk", "Linen"],
+      Material: ["Gold", "Silver"]
+    },
+    Accessories: {
+      Shape: ["Round", "Square", "Oval"],
+      Color: ["Red", "Blue", "Green"]
+    },
+    Handicrafts: {
+      Craft: ["Embroidery", "Painting", "Weaving"],
+      Technique: ["Handmade", "Machine"]
+    },
+    "Home Decor": {
+      Material: ["Wood", "Metal", "Glass"],
+      Color: ["Brown", "Black", "White"]
+    }
+  };
 
-const dynamicFilterData = {
-  Clothing: {
-    Size: ["Small", "Medium", "Large"],
-    Fabric: ["Cotton", "Silk", "Linen"],
-    Material: ["Gold", "Silver"]
-  },
-  Accessories: {
-    Shape: ["Round", "Square", "Oval"],
-    Color: ["Red", "Blue", "Green"]
-  },
-  Handicrafts: {
-    Craft: ["Embroidery", "Painting", "Weaving"],
-    Technique: ["Handmade", "Machine"]
-  },
-  "Home Decor": {
-    Material: ["Wood", "Glass", "Metal"],
-    Style: ["Modern", "Rustic", "Classic"]
+  function toggleMobileFilters() {
+    const wrapper = document.getElementById("mobileFilterWrapper");
+    const btn = document.getElementById("filterToggleBtn");
+    wrapper.classList.toggle("active");
+    btn.innerHTML = wrapper.classList.contains("active")
+      ? "Hide Filters &#x25B2;"
+      : "Show Filters &#x25BC;";
   }
-};
+
+ function updateFilterOptions(mode = "desktop") {
+  const categoryId = mode === "mobile" ? "categoryFilterMobile" : "categoryFilter";
+  const containerId = mode === "mobile" ? "dynamicFiltersMobile" : "dynamicFiltersDesktop";
+
+  const selectedCategory = document.getElementById(categoryId).value;
+  const dynamicFilterContainer = document.getElementById(containerId);
+  dynamicFilterContainer.innerHTML = "";
+
+  if (!selectedCategory || !dynamicFilterData[selectedCategory]) return;
+
+  const filters = dynamicFilterData[selectedCategory];
+  for (const [filterName, options] of Object.entries(filters)) {
+    const label = document.createElement("label");
+    label.textContent = filterName;
+    const select = document.createElement("select");
+    select.dataset.filterName = filterName; // Important for filtering
+    select.innerHTML = `<option value="All">All</option>`;
+    options.forEach(option => {
+      const opt = document.createElement("option");
+      opt.value = option;
+      opt.textContent = option;
+      select.appendChild(opt);
+    });
+    const group = document.createElement("div");
+    group.classList.add("filter-group");
+    group.appendChild(label);
+    group.appendChild(select);
+    dynamicFilterContainer.appendChild(group);
+  }
+}
+
+
+  function clearFilters() {
+    document.getElementById("categoryFilter").value = "All";
+    document.getElementById("minPrice").value = "";
+    document.getElementById("maxPrice").value = "";
+    document.getElementById("ratingFilter").value = "0";
+    updateFilterOptions("desktop");
+
+    clearFiltersMobile();
+    applyFilters();
+  }
+
+  function clearFiltersMobile() {
+    document.getElementById("categoryFilterMobile").value = "All";
+    document.getElementById("minPriceMobile").value = "";
+    document.getElementById("maxPriceMobile").value = "";
+    document.getElementById("ratingFilterMobile").value = "0";
+    updateFilterOptions("mobile");
+  }
+
+  function applyFilters() {
+    const category = document.getElementById("categoryFilter").value;
+    const minPrice = parseFloat(document.getElementById("minPrice").value) || 0;
+    const maxPrice = parseFloat(document.getElementById("maxPrice").value) || Infinity;
+    const minRating = parseInt(document.getElementById("ratingFilter").value) || 0;
+
+    const dynamicFilterElements = document.querySelectorAll("#dynamicFiltersDesktop select");
+    const dynamicFilters = {};
+    dynamicFilterElements.forEach(select => {
+      if (select.value !== "All") {
+        dynamicFilters[select.dataset.filterName.toLowerCase()] = select.value;
+      }
+    });
+
+    document.querySelectorAll(".product-card").forEach(card => {
+      const cardCategory = card.dataset.category;
+      const cardPrice = parseFloat(card.dataset.price);
+      const cardRating = parseInt(card.dataset.rating);
+
+      let show = true;
+
+      if (category !== "All" && category !== cardCategory) show = false;
+      if (cardPrice < minPrice || cardPrice > maxPrice) show = false;
+      if (cardRating < minRating) show = false;
+
+      for (let key in dynamicFilters) {
+        const value = card.dataset[key];
+        if (value !== dynamicFilters[key]) {
+          show = false;
+          break;
+        }
+      }
+
+      card.style.display = show ? "flex" : "none";
+    });
+  }
+
+  function applyFiltersMobile() {
+    syncFilters("mobileToDesktop");
+    applyFilters();
+    toggleMobileFilters();
+  }
+
+ function syncFilters(direction) {
+  const from = direction === "mobileToDesktop" ? "Mobile" : "";
+  const to = direction === "mobileToDesktop" ? "" : "Mobile";
+
+  document.getElementById("categoryFilter" + to).value = document.getElementById("categoryFilter" + from).value;
+  document.getElementById("minPrice" + to).value = document.getElementById("minPrice" + from).value;
+  document.getElementById("maxPrice" + to).value = document.getElementById("maxPrice" + from).value;
+  document.getElementById("ratingFilter" + to).value = document.getElementById("ratingFilter" + from).value;
+
+  updateFilterOptions(to === "Mobile" ? "mobile" : "desktop");
+}
+
+  function searchProducts() {
+    const query = document.getElementById("searchBox").value.toLowerCase();
+    document.querySelectorAll(".product-card").forEach(card => {
+      const text = card.textContent.toLowerCase();
+      card.style.display = text.includes(query) ? "flex" : "none";
+    });
+  }
+
+  // Init
+function scrollDeals(direction) {
+  const wrapper = document.getElementById("dailyDealsWrapper");
+  const scrollAmount = 300;
+  wrapper.scrollBy({
+    left: direction === "left" ? -scrollAmount : scrollAmount,
+    behavior: "smooth"
+  });
+}
+
 </script>
+
 </body>
 </html>
