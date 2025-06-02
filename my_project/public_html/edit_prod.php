@@ -41,12 +41,11 @@ $conn->close();
              class="w-32 h-32 object-cover rounded-xl border <?= empty($product['image_url']) ? 'hidden' : '' ?>" />
       </div>
 
-      <div class="flex-1 space-y-4">
+     <div class="flex-1 space-y-4">
         <div>
           <label class="block text-purple-800 font-medium">Product Name</label>
           <input type="text" name="name" value="<?= htmlspecialchars($product['product_name']) ?>" class="w-full p-2 border rounded bg-purple-50">
         </div>
-
         <div>
           <label class="block text-purple-800 font-medium">Category</label>
           <select name="category" class="w-full p-2 border rounded bg-purple-50">
@@ -62,7 +61,8 @@ $conn->close();
       </div>
     </div>
 
-    <div class="grid grid-cols-2 gap-4">
+    <!-- Price, Stock, Quantity -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
       <div>
         <label class="block text-purple-800 font-medium">Price</label>
         <input type="text" name="price" value="<?= htmlspecialchars($product['price']) ?>" class="w-full p-2 border rounded bg-purple-50">
@@ -80,12 +80,31 @@ $conn->close();
         <label class="block text-purple-800 font-medium">Quantity</label>
         <input type="number" name="quantity" value="<?= $product['quantity'] ?>" class="w-full p-2 border rounded bg-purple-50">
       </div>
+
+      <div>
+        <label class="block text-purple-800 font-medium">Color</label>
+        <input type="text" name="color" value="<?= htmlspecialchars($product['prod-color']) ?>" class="w-full p-2 border rounded bg-purple-50">
+      </div>
     </div>
 
+    <!-- Sizes and Material -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div>
+        <label class="block text-purple-800 font-medium">Sizes (comma separated)</label>
+        <input type="text" name="size" value="<?= htmlspecialchars($product['prod-size']) ?>" class="w-full p-2 border rounded bg-purple-50">
+      </div>
+      <div>
+        <label class="block text-purple-800 font-medium">Material</label>
+        <input type="text" name="material" value="<?= htmlspecialchars($product['material']) ?>" class="w-full p-2 border rounded bg-purple-50">
+      </div>
+    </div>
+
+    <!-- Description -->
     <div>
       <label class="block text-purple-800 font-medium">Description</label>
       <textarea name="description" rows="4" class="w-full p-3 border rounded bg-purple-50"><?= htmlspecialchars($product['description']) ?></textarea>
     </div>
+
 
     <div class="flex justify-between border-t pt-4">
       <button type="submit" class="bg-purple-600 text-white px-6 py-2 rounded hover:bg-purple-700">Save Changes</button>

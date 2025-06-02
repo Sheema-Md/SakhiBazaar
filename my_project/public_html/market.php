@@ -1,645 +1,478 @@
 <?php 
-session_start();
-if (!isset($_SESSION["loggedin"]) || $_SESSION["role"] !== 'seller') {
-    header("Location:../login.php");
-    exit();
+require_once __DIR__ . '/../config/config.php'; 
+
+$category = $_GET['category'] ?? '';
+$minPrice = $_GET['minPrice'] ?? 0;
+$maxPrice = $_GET['maxPrice'] ?? 99999;
+$rating = $_GET['rating'] ?? 0;
+$size = $_GET['size'] ?? '';
+$material = $_GET['material'] ?? '';
+$color = $_GET['color'] ?? '';
+
+$where = "WHERE price BETWEEN " . (int)$minPrice . " AND " . (int)$maxPrice . " AND rating >= " . (float)$rating;
+$categories = ['👗 Clothing', 'Accessories', 'Handicrafts', 'Home Decor']; // These should ideally come from your DB if dynamic
+
+if (!empty($category) && $category !== 'All') {
+    $category = $conn->real_escape_string($category);
+    $where .= " AND category = '$category'";
 }
-require_once  __DIR__ . "/../config/config.php";
-require_once 'partials/header.php';
 
+if (!empty($size)) {
+    $size = $conn->real_escape_string($size);
+    $where .= " AND `prod-size` = '$size'";
+}
 
-require_once 'partials/sidebar.php';?>
-<div class="overlay" id="overlay"></div>
-<?php
-require_once 'models/SellerModel.php';
-$user_id = $_SESSION['id'];
+if (!empty($material)) {
+    $material = $conn->real_escape_string($material);
+    $where .= " AND material = '$material'";
+}
+if (!empty($color)) {
+    $color = $conn->real_escape_string($color);
+    $where .= " AND `prod-color` = '$color'";
+}
 
-// or however you get the seller id
-$sellerModel = new SellerModel($conn);
-$data = [
-    'name' => $sellerModel->getSellerName($user_id),];
+$sql = "SELECT * FROM products $where";
+$result = $conn->query($sql);
+
+$availableFilters = ['size' => [], 'material' => [], 'color' => []];
+
+// Fetch available filter options dynamically based on the current category
+if (!empty($category) && $category !== 'All') {
+    // Get available sizes for the selected category
+    $sizeQuery = $conn->query("SELECT DISTINCT `prod-size` FROM products WHERE category = '$category' AND `prod-size` IS NOT NULL");
+    if ($sizeQuery && $sizeQuery->num_rows > 0) {
+        while ($row = $sizeQuery->fetch_assoc()) {
+            $availableFilters['size'][] = $row['prod-size'];
+        }
+    }
+
+    // Get available materials for the selected category
+    $materialQuery = $conn->query("SELECT DISTINCT material FROM products WHERE category = '$category' AND material IS NOT NULL");
+    if ($materialQuery && $materialQuery->num_rows > 0) {
+        while ($row = $materialQuery->fetch_assoc()) {
+            $availableFilters['material'][] = $row['material'];
+        }
+    }
+    // Get available colors for the selected category
+    $colorQuery = $conn->query("SELECT DISTINCT `prod-color` FROM products WHERE category = '$category' AND `prod-color` IS NOT NULL");
+    if ($colorQuery && $colorQuery->num_rows > 0) {
+        while ($row = $colorQuery->fetch_assoc()) {
+            $availableFilters['color'][] = $row['prod-color'];
+        }
+    }
+}
+// Sort filter options for consistent display
+foreach ($availableFilters as $key => $value) {
+    sort($availableFilters[$key]);
+}
+
 ?>
 
-
-  
-
-<main class="main-content">
-    <header class="topbar">
-        
-
-        <button class="hamburger" id="hamburger-btn"><i class="fas fa-bars"></i></button>
-        
-        <select class="language-select">
-            <option>English</option>
-            <option>Telugu</option>
-            <option>Hindi</option>
-            <option>Urdu</option>
-        </select>
-        <i class="fas fa-bell notification-icon"><span class="badge">3</span></i>
-        <a href = "sellerprofile.php"  "style="text-decoration:none; color:inherit; display:block;">
-        <div class="profile-name"><?php echo htmlspecialchars($data['name']); ?></div></a>
-
-    </header>
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Sakhi Bazaar - Responsive Filters</title>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-<style>
-  body {
-    margin: 0; font-family: Arial, sans-serif; background:linear-gradient(#EDE4F0);
-  }
-  header {
-    background-color:  linear-gradient(#EDE4F0);
+<link rel="stylesheet" href="css/sell_dash_style.css"/>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
  
-  color: black;
-  padding: 15px 20px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 15px;
+<style>
+    body {
+        margin: 0; font-family: Arial, sans-serif; background:linear-gradient(#EDE4F0);
+    }
+    header {
+        background-color: linear-gradient(#EDE4F0);
+        color: black;
+        padding: 15px 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 15px;
+        max-width: 1200px;
+        margin: auto;
+        width: 100%;
+    }
+    .header-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 16px;
+    }
+    .search-container {
+        display: flex; align-items: center; background: white;
+        padding: 5px; border-radius: 5px;
+        width: 100%; max-width: 700px; flex-grow: 1; min-width: 250px;
+    }
+    .search-container input {
+        border: none; outline: none; padding: 8px; flex: 1;
+    }
+    .search-container i {
+        color: gray; padding: 0 10px; cursor: pointer;
+    }
+    .icons {
+        display: flex;
+        gap: 20px;
+        font-size: 18px;
+        flex-shrink: 0;
+        align-items: center;
+        justify-content: center;
+    }
+    .market-content {
+        display: flex; padding: 20px; gap: 20px; flex-wrap: wrap;
+    }
+    .sidebar-container {
+        display: flex;
+        gap: 20px;
+        margin-bottom: 20px;
+    }
+    .content-wrapper {
+        display: flex;
+        gap: 20px;
+        flex-wrap: nowrap;
+    }
+    .filter-sidebar {
+        width: 250px;
+        background: #fff;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1); /* Changed from #EDE4F0 to a proper shadow */
+        flex-shrink: 0;
+        height: fit-content;
+    }
+    .products-section {
+        flex: 1;
+        min-width: 300px;
+    }
+    .filter-group {
+        margin-bottom: 20px;
+    }
+    .filter-group select, .filter-group input {
+        background-color: #f9f9f9;
+        border: 1px solid #aaa;
+        width: 100%;
+        padding: 8px;
+        margin-top: 5px;
+        border-radius: 5px;
+        box-sizing: border-box;
+    }
+    .filter-group label {
+        font-weight: bold; display: block; margin-bottom: 5px;
+        font-size: 14px;
+        color: #333;
+    }
+    .filter-actions {
+        display: flex; justify-content: flex-start; gap: 10px;
+    }
+    .filter-actions button {
+        padding: 8px 16px; cursor: pointer; border: none;
+        border-radius: 4px; color: white; font-weight: bold;
+    }
+    .filter-actions button:first-child {
+        background-color: #ccc; color: #333;
+    }
+    .filter-actions button:last-child {
+        background-color: #4b0082;
+    }
+    h2 {
+        margin-top: 0; margin-bottom: 15px; color: #333;
+    }
+    .product-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+        gap: 20px;
+    }
+    .product-card {
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        padding: 10px;
+        text-align: center;
+        background: #fff;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        display: flex; /* Make it a flex container */
+        flex-direction: column; /* Stack children vertically */
+        justify-content: space-between; /* Push buttons to bottom */
+        height: 100%; /* Ensure cards are same height */
+    }
+    .product-card img {
+        max-width: 100%;
+        height: auto;
+        border-radius: 4px;
+        margin-bottom: 10px;
+    }
+    .product-card h3 {
+        font-size: 1.1em;
+        margin: 5px 0;
+        color: #333;
+    }
+    .product-card p {
+        font-size: 0.9em;
+        color: #666;
+        margin: 5px 0;
+    }
+    .product-card span {
+        font-size: 1.2em;
+        font-weight: bold;
+        color: #4b0082;
+        margin-bottom: 10px;
+        display: block; /* Ensure price is on its own line */
+    }
+    .product-card .rating {
+        color: gold; /* Or a suitable color for stars */
+        margin-bottom: 10px;
+    }
+    .product-buttons {
+        display: flex; justify-content: center; gap: 10px;
+        margin-top: auto; /* Push buttons to the bottom of the card */
+    }
+    .product-card button {
+        padding: 5px 10px;
+        border: none; border-radius: 4px;
+        background-color: #4b0082;
+        color: white; cursor: pointer;
+        flex-shrink: 0;
+        font-size: 0.9em;
+    }
+    .product-card button.wishlist {
+        background-color: #e91e63;
+        margin-left: 5px;
+    }
 
-  max-width: 1200px;  /* or any width you want */
-  margin: auto;     /* centers the header */
-  width: 100%;        /* ensures responsive scaling */
-}
-.header-container {
-  max-width: 1200px; /* or whatever fits your layout */
-  margin: 0 auto;
-  padding: 0 16px; /* optional for spacing */
-}
-
-
-  .search-container {
-    display: flex; align-items: center; background: white;
-    padding: 5px; border-radius: 5px;
-    width: 100%; max-width: 700px; flex-grow: 1; min-width: 250px;
-  }
-  .search-container input {
-    border: none; outline: none; padding: 8px; flex: 1;
-  }
-  .search-container i {
-    color: gray; padding: 0 10px; cursor: pointer;
-  }
-  .icons {
-  display: flex;
-  gap: 20px;
-  font-size: 18px;
-  flex-shrink: 0;
-  align-items: center;
-  justify-content: center; /* Center the icons */
-}
-
-  .market-content {
-    display: flex; padding: 20px; gap: 20px; flex-wrap: wrap;
-  }
-  /* Filter Sidebar - Desktop */
-  .sidebar-container {
-  display: flex;
-  gap: 20px; /* space between main sidebar and filter sidebar */
-  margin-bottom: 20px;
-}
-
-.content-wrapper {
-  display: flex;
-  gap: 20px;
-  flex-wrap: nowrap;
-  /* full width of main-content */
-}
-
-/* Filter sidebar next to fixed sidebar */
-.filter-sidebar {
-  width: 250px;
-  background: #fff;
-  padding: 20px;
-  border-radius: 8px;
-  box-shadow: #EDE4F0;
-  flex-shrink: 0;
-  height: fit-content;
-}
-
-/* Products section fills remaining space */
-.products-section {
-  flex: 1;
-  min-width: 300px;
-}
-
-
-
-/* products-section stays as is */
-
-  
-  .filter-group {
-    margin-bottom: 15px;
-  }
-  .filter-group label {
-    font-weight: bold; display: block; margin-bottom: 5px;
-  }
-  .filter-group input,
-  .filter-group select {
-    width: 100%;
-    padding: 8px;
-    margin-top: 5px;
-    border: 1px solid #ccc; border-radius: 5px;
-    box-sizing: border-box;
-  }
-  .filter-actions {
-    display: flex; justify-content: flex-start; gap: 10px;
-  }
-  .filter-actions button {
-    padding: 8px 16px; cursor: pointer; border: none;
-    border-radius: 4px; color: white; font-weight: bold;
-  }
-  .filter-actions button:first-child {
-    background-color: #ccc; color: #333;
-  }
-  .filter-actions button:last-child {
-    background-color: #4b0082;
-  }
-  /* Products */
-  
-  h2 {
-    margin-top: 0; margin-bottom: 15px; color: #333;
-  }
-  .product-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-    gap: 20px;
-  }
-  .product-card {
-    background: #fff; padding: 10px; border-radius: 8px;
-    text-align: center;
-    box-shadow: 0 0 5px rgba(0,0,0,0.1);
-    display: flex; flex-direction: column; justify-content: space-between;
-  }
-  .product-card img {
-    width: 100%; max-height: 130px; object-fit: cover;
-    border-radius: 6px; margin-bottom: 10px;
-  }
-  .product-buttons {
-    display: flex; justify-content: center; gap: 10px;
-  }
-  .product-card button {
-    margin-top: 5px;
-    padding: 5px 10px;
-    border: none; border-radius: 4px;
-    background-color: #4b0082;
-    color: white; cursor: pointer;
-    flex-shrink: 0;
-  }
-  .product-card button.wishlist {
-    background-color: #e91e63;
-    margin-left: 5px;
-  }
-  /* MOBILE: Entire filter sidebar shown top and toggled */
-  /* Update: Filter button spacing */
-#filterToggleBtn {
-  display: none;
-  background-color: #4b0082;
-  color: white;
-  border: none;
-  padding: 12px 20px;
-  cursor: pointer;
-  font-weight: bold;
-  width: 100%;
-  margin: 10px 0; /* Updated spacing */
-  border-radius: 5px; /* Rounded for consistency */
-}
-
-/* Update: Mobile Filter Wrapper toggling */
-#mobileFilterWrapper {
-  display: none;
-  background: #fff;
-  padding: 20px;
-  border-radius: 8px;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-  transition: all 0.3s ease-in-out;
-}
-
-#mobileFilterWrapper.active {
-  display: block;
-}
-
-/* Update: Dynamic Filter Selects */
-.filter-group select,
-.filter-group input {
-  font-size: 14px;
-}
-
-/* Responsive layout tweaks */
-
-@media (max-width: 768px) {
-  .market-content {
-    flex-direction: column;
-    padding: 10px;
-  }
-  .filter-sidebar {
-    display: none;
-  }
-  #filterToggleBtn {
-    display: block;
-  }
-  .products-section {
-    min-width: 100%;
-  }
-  .filter-group {
-    margin-bottom: 15px;
-  }
-  
+    #filterToggleBtn {
+        display: none;
+        background-color: #4b0082;
+        color: white;
+        border: none;
+        padding: 12px 20px;
+        cursor: pointer;
+        font-weight: bold;
+        width: 100%;
+        margin: 10px 0;
+        border-radius: 5px;
+    }
     #mobileFilterWrapper {
-      display: none;
-      margin-bottom: 10px;
+        display: none;
+        background: #fff;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        transition: all 0.3s ease-in-out;
     }
     #mobileFilterWrapper.active {
-      display: block;
+        display: block;
     }
-    
-  }
-  /* Horizontal scroll for Daily Deals */
-.daily-deals-scroll {
-  display: flex;
-  overflow-x: auto;
-  gap: 16px;
-  padding-bottom: 10px;
-  scroll-snap-type: x mandatory;
-}
-.daily-deals-scroll .product-card {
-  min-width: 160px;
-  scroll-snap-align: start;
-}
-.daily-deals-scroll::-webkit-scrollbar {
-  height: 6px;
-}
-.daily-deals-scroll::-webkit-scrollbar-thumb {
-  background-color: #aaa;
-  border-radius: 4px;
-}
-/* Scrollable Daily Deals Section */
-.scrollable-container {
-  position: relative;
-  margin-bottom: 30px;
-}
-
-.scroll-wrapper {
-  overflow-x: auto;
-  white-space: nowrap;
-  scroll-behavior: smooth;
-  padding-bottom: 10px;
-}
-
-.scrollable-grid {
-  display: inline-flex;
-  gap: 20px;
-}
-
-.scroll-arrow {
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  background: #4b0082;
-  color: white;
-  border: none;
-  padding: 10px;
-  cursor: pointer;
-  z-index: 2;
-  border-radius: 50%;
-}
-
-.scroll-arrow.right {
-  right: 10px; /* changed from -10px */
-}
-.scroll-arrow.left {
-  left: 10px;  /* changed from -10px */
-}
-.scroll-arrow {
-  top: 40%;
-}
-
-
+    .filter-group select,
+    .filter-group input {
+        font-size: 14px;
+    }
+    @media (max-width: 768px) {
+        .market-content {
+            flex-direction: column;
+            padding: 10px;
+        }
+        .filter-sidebar {
+            display: none;
+        }
+        #filterToggleBtn {
+            display: block;
+        }
+        .products-section {
+            min-width: 100%;
+        }
+        .filter-group {
+            margin-bottom: 15px;
+        }
+        #mobileFilterWrapper {
+            display: none;
+            margin-bottom: 10px;
+        }
+        #mobileFilterWrapper.active {
+            display: block;
+        }
+    }
 </style>
 </head>
 <body>
-<div class="header-container">
-<header>
-  
-  <div class="search-container">
-    <input type="text" id="searchBox" placeholder="Search products..." />
-    <i class="fas fa-camera" title="Search by camera"></i>
-    <i class="fas fa-search" onclick="searchProducts()" title="Search"></i>
-  </div>
-  <div class="icons">
-    <i class="fas fa-heart" title="Wishlist"></i>
-    <i class="fas fa-shopping-cart" title="Cart"></i>
-    
-  </div>
-</header>
-</div>
-<button id="filterToggleBtn" onclick="toggleMobileFilters()">Show Filters &#x25BC;</button>
-
-<div class="market-content">
-
-  <!-- Desktop Sidebar -->
-   <div class="content-wrapper">
-
-  <aside class="filter-sidebar" id="filterSidebar">
-    <h3>Filters</h3>
-    <div class="filter-group">
-      <label for="categoryFilter"><i class="fas fa-tags"></i> Category</label>
-
-      <select id="categoryFilter" onchange="updateFilterOptions()">
-        <option value="All">All</option>
-        <option value="Clothing">Clothing</option>
-        <option value="Accessories">Accessories</option>
-        <option value="Handicrafts">Handicrafts</option>
-        <option value="Home Decor">Home Decor</option>
-      </select>
+    <div class="header-container">
+        <header>
+            <div class="search-container">
+                <input type="text" id="searchBox" placeholder="Search products..." />
+                <i class="fas fa-camera" title="Search by camera"></i>
+                <i class="fas fa-search" onclick="searchProducts()" title="Search"></i>
+            </div>
+            <div class="icons">
+                <i class="fas fa-heart" title="Wishlist"></i>
+                <i class="fas fa-shopping-cart" title="Cart"></i>
+            </div>
+        </header>
     </div>
 
-    <div class="filter-group" id="dynamicFiltersDesktop">
-      <!-- Dynamic filters for desktop here -->
-    </div>
+    <button id="filterToggleBtn" onclick="toggleMobileFilters()">Show Filters &#x25BC;</button>
 
-    <div class="filter-group">
-      <label for="minPrice"><i class="fas fa-rupee-sign"></i> Price Range (₹)</label>
+    <div class="market-content" data-filter-data='<?php echo htmlspecialchars(json_encode($availableFilters), ENT_QUOTES, 'UTF-8'); ?>'>
+        
+        <div class="content-wrapper">
+            <aside class="filter-sidebar" id="filterSidebar">
+                <h3>Filters</h3>
+                <div class="filter-group">
+                    <label for="categoryFilter">
+                        <i class="fas fa-tags"></i> Category:
+                        <select id="categoryFilter" onchange="applyFilters()">
+                            <option value="All">All</option>
+                            <?php foreach ($categories as $cat): ?>
+                                <option value="<?= htmlspecialchars($cat) ?>" <?= ($category == $cat) ? 'selected' : '' ?>><?= htmlspecialchars($cat) ?></option>
+                            <?php endforeach; ?>
+                        </select>
+                    </label>
+                </div>
 
-      <input type="number" id="minPrice" placeholder="Min" min="0" />
-      <input type="number" id="maxPrice" placeholder="Max" min="0" style="margin-top:5px;" />
-    </div>
-
-    <div class="filter-group">
-      <label for="ratingFilter"><i class="fas fa-star"></i> Rating</label>
-      <select id="ratingFilter">
-        <option value="0">All</option>
-        <option value="4">4★ & above</option>
-        <option value="3">3★ & above</option>
-      </select>
-    </div>
-
-    <div class="filter-actions">
-      <button onclick="clearFilters()">Clear</button>
-      <button onclick="applyFilters()">Done</button>
-    </div>
-  </aside>
-</div>
-
-  <!-- Mobile Filter Wrapper: same filters as desktop but with unique IDs -->
-  <div id="mobileFilterWrapper">
-    <h3>Filters</h3>
-    <div class="filter-group">
-      <label for="categoryFilter"><i class="fas fa-tags"></i> Category</label>
-
-
-      <select id="categoryFilterMobile" onchange="updateFilterOptions('mobile')">
-        <option value="All">All</option>
-        <option value="Clothing">Clothing</option>
-        <option value="Accessories">Accessories</option>
-        <option value="Handicrafts">Handicrafts</option>
-        <option value="Home Decor">Home Decor</option>
-      </select>
-    </div>
-
-    <div class="filter-group" id="dynamicFiltersMobile">
-      <!-- Dynamic filters for mobile here -->
-    </div>
-
-    <div class="filter-group">
-      <label for="minPrice"><i class="fas fa-rupee-sign"></i> Price Range (₹)</label>
-      <input type="number" id="minPriceMobile" placeholder="Min" min="0" />
-      <input type="number" id="maxPriceMobile" placeholder="Max" min="0" style="margin-top:5px;" />
-    </div>
-
-    <div class="filter-group">
-      
-<label for="ratingFilter"><i class="fas fa-star"></i> Rating</label>
-      <select id="ratingFilterMobile">
-        <option value="0">All</option>
-        <option value="4">4★ & above</option>
-        <option value="3">3★ & above</option>
-      </select>
-    </div>
-
-    <div class="filter-actions">
-      <button onclick="clearFiltersMobile()">Clear</button>
-      <button onclick="applyFiltersMobile()">Done</button>
-    </div>
-  </div>
-
-  <section class="products-section">
-<div class="scrollable-container">
-  <h2>🎉 Daily Deals</h2>
-  <button class="scroll-arrow left" onclick="scrollDeals('left')">&#9664;</button>
-  <div class="scroll-wrapper" id="dailyDealsWrapper">
-    <div class="scrollable-grid" id="dailyDeals">
-      <!-- existing daily deal cards remain unchanged -->
-
-  <div class="product-card" data-category="Clothing" data-price="499" data-rating="4">
-    <img src="https://images.unsplash.com/photo-1618354691210-2f4a22ab10c6?auto=format&fit=crop&w=150&q=80" alt="Silk Kurti" />
-    <p>Silk Kurti</p>
-    <p><del>₹799</del> <strong>₹499</strong></p>
-<span style="color: green; font-weight: bold;">38% OFF</span>
-
-    <div class="product-buttons">
-      <button>Add to Cart</button>
-      <button class="wishlist" title="Add to Wishlist">&#9825;</button>
-    </div>
-  </div>
-  
-  <!-- Add more product cards horizontally -->
-   <div class="product-card" data-category="Clothing" data-price="499" data-rating="4">
-    <img src="https://images.unsplash.com/photo-1618354691210-2f4a22ab10c6?auto=format&fit=crop&w=150&q=80" alt="Silk Kurti" />
-    <p>Silk Kurti</p>
-    <p><del>₹799</del> <strong>₹499</strong></p>
-<span style="color: green; font-weight: bold;">38% OFF</span>
-    <div class="product-buttons">
-      <button>Add to Cart</button>
-      <button class="wishlist" title="Add to Wishlist">&#9825;</button>
-    </div>
-  </div>
-  
-
-  <div class="product-card" data-category="Clothing" data-price="499" data-rating="4">
-    <img src="https://images.unsplash.com/photo-1618354691210-2f4a22ab10c6?auto=format&fit=crop&w=150&q=80" alt="Silk Kurti" />
-    <p>Silk Kurti</p>
-    <p><del>₹799</del> <strong>₹499</strong></p>
-<span style="color: green; font-weight: bold;">38% OFF</span>
-    <div class="product-buttons">
-      <button>Add to Cart</button>
-      <button class="wishlist" title="Add to Wishlist">&#9825;</button>
-    </div>
-  </div>
-</div>
-    </div> <!-- end scrollable-grid -->
-  </div> <!-- end scroll-wrapper -->
-  <button class="scroll-arrow right" onclick="scrollDeals('right')">&#9654;</button>
-</div> <!-- end scrollable-container -->
-
-
-    <h2>💼 Products For You</h2>
-    <div class="product-grid" id="productList">
-      <div class="product-card" data-category="Accessories" data-price="199" data-rating="5" data-size="Small" data-fabric="Cotton" data-material="Gold" data-shape="Round" data-color="Red" data-craft="Embroidery" data-technique="Handmade">
-        <img src="https://images.unsplash.com/photo-1579799849915-fd1f634d90c4?auto=format&fit=crop&w=150&q=80" alt="Handmade Earrings" />
-        <p>Handmade Earrings</p>
-        <p><strong>₹199</strong></p>
-        <div class="product-buttons">
-          <button>Add to Cart</button>
-          <button class="wishlist" title="Add to Wishlist">&#9825;</button>
+               <?php foreach (['size', 'material', 'color'] as $filter): ?>
+    <?php if (!empty($availableFilters[$filter])): ?>
+        <div class="filter-group">
+            <label for="<?= $filter ?>Filter"><i class="fas fa-filter"></i> <?= ucfirst($filter) ?>:</label>
+            <select id="<?= $filter ?>Filter" onchange="applyFilters()">
+                <option value="">All</option>
+                <?php foreach ($availableFilters[$filter] as $option): ?>
+                    <option value="<?= htmlspecialchars($option) ?>" <?= ($$filter == $option) ? 'selected' : '' ?>>
+                        <?= htmlspecialchars($option) ?>
+                    </option>
+                <?php endforeach; ?>
+            </select>
         </div>
-      </div>
-      <div class="product-card" data-category="Clothing" data-price="999" data-rating="3" data-size="Large" data-fabric="Silk" data-material="Silver" data-shape="Oval" data-color="Blue" data-craft="Weaving" data-technique="Machine">
-        <img src="https://images.unsplash.com/photo-1503342217505-b0a15ec3261c?auto=format&fit=crop&w=150&q=80" alt="Designer Saree" />
-        <p>Designer Saree</p>
-        <p><strong>₹999</strong></p>
-        <div class="product-buttons">
-          <button>Add to Cart</button>
-          <button class="wishlist" title="Add to Wishlist">&#9825;</button>
+    <?php endif; ?>
+<?php endforeach; ?>
+
+
+                <div class="filter-group">
+                    <label for="ratingFilter"><i class="fas fa-star"></i> Rating:</label>
+                    <select name="rating" id="ratingFilter">
+                        <option value="0">All Ratings</option>
+                        <?php for ($i = 1; $i <= 4; $i++): ?>
+                            <option value="<?= $i ?>" <?= ($rating == $i) ? 'selected' : '' ?>><?= $i ?>★ & up</option>
+                        <?php endfor; ?>
+                    </select>
+                </div>
+
+                <div class="filter-group">
+                    <label for="minPrice"><i class="fas fa-dollar-sign"></i> Price:</label>
+                    <input type="number" name="minPrice" id="minPrice" value="<?= htmlspecialchars($minPrice) ?>" placeholder="Min">
+                    <span>-</span>
+                    <input type="number" name="maxPrice" id="maxPrice" value="<?= htmlspecialchars($maxPrice) ?>" placeholder="Max">
+                </div>
+
+                <div class="filter-actions">
+                    <button type="button" onclick="clearFilters()">Clear</button>
+                    <button type="button" onclick="applyFilters()"><i class="fas fa-filter"></i> Apply Filters</button>
+                </div>
+            </aside>
         </div>
-      </div>
-      <div class="product-card" data-category="Handicrafts" data-price="349" data-rating="4" data-size="Medium" data-fabric="Linen" data-material="Wood" data-shape="Square" data-color="Green" data-craft="Painting" data-technique="Handmade">
-        <img src="https://images.unsplash.com/photo-1539874754764-5a965591f0e1?auto=format&fit=crop&w=150&q=80" alt="Decorative Vase" />
-        <p>Decorative Vase</p>
-        <p><strong>₹349</strong></p>
-        <div class="product-buttons">
-          <button>Add to Cart</button>
-          <button class="wishlist" title="Add to Wishlist">&#9825;</button>
+
+        <div id="mobileFilterWrapper">
+            <h3>Filters</h3>
+            <div class="filter-group">
+                <label for="categoryFilterMobile"><i class="fas fa-tags"></i> Category</label>
+                <select id="categoryFilterMobile" onchange="updateFilterOptions('mobile')">
+                    <option value="All">All</option>
+                    <?php foreach ($categories as $cat): ?>
+                        <option value="<?= htmlspecialchars($cat) ?>" <?= ($category == $cat) ? 'selected' : '' ?>><?= htmlspecialchars($cat) ?></option>
+                    <?php endforeach; ?>
+                </select>
+            </div>
+
+            <div class="filter-group" id="dynamicFiltersMobile"></div>
+
+            <div class="filter-group">
+                <label for="minPriceMobile"><i class="fas fa-dollar-sign"></i> Price Range (₹)</label>
+                <input type="number" id="minPriceMobile" placeholder="Min" min="0" value="<?= htmlspecialchars($minPrice) ?>" />
+                <input type="number" id="maxPriceMobile" placeholder="Max" min="0" value="<?= htmlspecialchars($maxPrice) ?>" />
+            </div>
+
+            <div class="filter-group">
+                <label for="ratingFilterMobile"><i class="fas fa-star"></i> Rating</label>
+                <select id="ratingFilterMobile">
+                    <option value="0">All</option>
+                    <?php for ($i = 1; $i <= 4; $i++): ?>
+                        <option value="<?= $i ?>" <?= ($rating == $i) ? 'selected' : '' ?>><?= $i ?>★ & above</option>
+                    <?php endfor; ?>
+                </select>
+            </div>
+
+            <div class="filter-actions">
+                <button onclick="clearFiltersMobile()">Clear</button>
+                <button onclick="applyFiltersMobile()">Done</button>
+            </div>
         </div>
-      </div>
-      <!-- Add more products as needed -->
+
+        <section class="products-section">
+            <h2>🎉 Daily Deals</h2>
+            <div class="product-grid" id="dailyDeals">
+                <div class="product-card" data-category="Clothing" data-price="499" data-rating="4">
+                    <a href="prod.php?id=daily-deal-1" style="text-decoration:none; color:inherit; display:block;">
+                        <img src="https://images.unsplash.com/photo-1618354691210-2f4a22ab10c6?auto=format&fit=crop&w=150&q=80" alt="Silk Kurti" />
+                        <h3>Silk Kurti</h3>
+                        <p><strong>₹499</strong></p>
+                        <div class="rating">⭐⭐⭐⭐ (4.0)</div>
+                    </a>
+                    <div class="product-buttons">
+                        <button>Add to Cart</button>
+                        <button class="wishlist" title="Add to Wishlist">&#9825;</button>
+                    </div>
+                </div>
+                </div>
+
+            <h2>💼 Products For You</h2>
+            <div class="product-grid" id="productList">
+                <?php if ($result && $result->num_rows > 0): ?>
+                    <?php while($product = $result->fetch_assoc()): ?>
+                        <?php
+                            $stock = (int)$product['quantity'];
+                            if ($stock > 10) {
+                                $stock_class = "in-stock";
+                                $stock_label = "In stock";
+                            } elseif ($stock > 0) {
+                                $stock_class = "low-stock";
+                                $stock_label = "Low stock";
+                            } else {
+                                $stock_class = "out-of-stock";
+                                $stock_label = "Out of stock";
+                            }
+
+                            $displayRating = round(floatval($product['rating']) * 2) / 2;
+                            $fullStars = floor($displayRating);
+                            $halfStar = ($displayRating - $fullStars) == 0.5;
+                            $emptyStars = 5 - $fullStars - ($halfStar ? 1 : 0);
+
+                            $stars_html = str_repeat("⭐", $fullStars);
+                            if ($halfStar) $stars_html .= "½"; // Using half-star character
+                            $stars_html .= str_repeat("☆", $emptyStars);
+
+                            $image_url = !empty($product['image_url']) ? htmlspecialchars($product['image_url']) : "images/placeholder.png";
+                            $name = htmlspecialchars($product['product_name']);
+                            $price = number_format(floatval($product['price']), 2);
+                        ?>
+                        <div class="product-card">
+                            <a href="prod.php?id=<?= htmlspecialchars($product['id']) ?>" style="text-decoration:none; color:inherit; display:block;">
+                                <div class="image-placeholder">
+                                    <img src="<?= $image_url ?>" alt="<?= $name ?>">
+                                </div>
+                                <h3><?= $name ?></h3>
+                                <p>Stock: <?= $stock ?> | <span class="<?= $stock_class ?>"><?= $stock_label ?></span></p>
+                                <span>₹<?= $price ?></span>
+                                <div class="rating"><?= $stars_html ?> (<?= $displayRating ?>)</div>
+                            </a>
+                            <div class="product-buttons">
+                                <button>Add to Cart</button>
+                                <button class="wishlist" title="Add to Wishlist">&#9825;</button>
+                            </div>
+                        </div>
+                    <?php endwhile; ?>
+                <?php else: ?>
+                    <p style="text-align:center; width: 100%;">No products found matching your filters.</p>
+                <?php endif; ?>
+            </div>
+        </section>
     </div>
-  </section>
 
-</div>
-
-<!-- (All of your HTML markup remains mostly unchanged up to the end of your current script tag) -->
-<script>
-function toggleMobileFilters() {
-  const wrapper = document.getElementById("mobileFilterWrapper");
-  wrapper.classList.toggle("active");
-}
-
-function updateFilterOptions(view = "desktop") {
-  const category = document.getElementById(view === "mobile" ? "categoryFilterMobile" : "categoryFilter").value;
-  const filterContainer = document.getElementById(view === "mobile" ? "dynamicFiltersMobile" : "dynamicFiltersDesktop");
-  filterContainer.innerHTML = "";
-
-  const filters = dynamicFilterData[category];
-  if (!filters) return;
-
-  for (const [label, options] of Object.entries(filters)) {
-    const group = document.createElement("div");
-    group.className = "filter-group";
-
-    const labelElem = document.createElement("label");
-    labelElem.textContent = label;
-    group.appendChild(labelElem);
-
-    const select = document.createElement("select");
-    select.id = `${label.toLowerCase()}Filter${view === "mobile" ? "Mobile" : ""}`;
-    select.innerHTML = '<option value="">All</option>' + options.map(opt => `<option value="${opt}">${opt}</option>`).join("");
-
-    group.appendChild(select);
-    filterContainer.appendChild(group);
-  }
-}
-
-function applyFilters() {
-  const category = document.getElementById("categoryFilter").value;
-  const minPrice = parseInt(document.getElementById("minPrice").value) || 0;
-  const maxPrice = parseInt(document.getElementById("maxPrice").value) || Infinity;
-  const rating = parseInt(document.getElementById("ratingFilter").value);
-
-  const dynamicFilters = document.querySelectorAll("#dynamicFiltersDesktop select");
-  const filterValues = {};
-  dynamicFilters.forEach(select => {
-    if (select.value) {
-      filterValues[select.previousSibling.textContent.trim()] = select.value;
-    }
-  });
-
-  document.querySelectorAll(".product-card").forEach(card => {
-    const matchesCategory = category === "All" || card.dataset.category === category;
-    const price = parseInt(card.dataset.price);
-    const matchesPrice = price >= minPrice && price <= maxPrice;
-    const matchesRating = parseInt(card.dataset.rating) >= rating;
-    const matchesDynamic = Object.entries(filterValues).every(([key, val]) => card.dataset[key.toLowerCase()] === val);
-
-    card.style.display = matchesCategory && matchesPrice && matchesRating && matchesDynamic ? "block" : "none";
-  });
-}
-
-function clearFilters() {
-  document.getElementById("categoryFilter").value = "All";
-  document.getElementById("minPrice").value = "";
-  document.getElementById("maxPrice").value = "";
-  document.getElementById("ratingFilter").value = "0";
-  document.getElementById("dynamicFiltersDesktop").innerHTML = "";
-  updateFilterOptions("desktop");
-  applyFilters();
-}
-
-function applyFiltersMobile() {
-  // mirror of applyFilters, but using mobile inputs
-  const category = document.getElementById("categoryFilterMobile").value;
-  const minPrice = parseInt(document.getElementById("minPriceMobile").value) || 0;
-  const maxPrice = parseInt(document.getElementById("maxPriceMobile").value) || Infinity;
-  const rating = parseInt(document.getElementById("ratingFilterMobile").value);
-
-  const dynamicFilters = document.querySelectorAll("#dynamicFiltersMobile select");
-  const filterValues = {};
-  dynamicFilters.forEach(select => {
-    if (select.value) {
-      filterValues[select.previousSibling.textContent.trim()] = select.value;
-    }
-  });
-
-  document.querySelectorAll(".product-card").forEach(card => {
-    const matchesCategory = category === "All" || card.dataset.category === category;
-    const price = parseInt(card.dataset.price);
-    const matchesPrice = price >= minPrice && price <= maxPrice;
-    const matchesRating = parseInt(card.dataset.rating) >= rating;
-    const matchesDynamic = Object.entries(filterValues).every(([key, val]) => card.dataset[key.toLowerCase()] === val);
-
-    card.style.display = matchesCategory && matchesPrice && matchesRating && matchesDynamic ? "block" : "none";
-  });
-}
-
-function clearFiltersMobile() {
-  document.getElementById("categoryFilterMobile").value = "All";
-  document.getElementById("minPriceMobile").value = "";
-  document.getElementById("maxPriceMobile").value = "";
-  document.getElementById("ratingFilterMobile").value = "0";
-  document.getElementById("dynamicFiltersMobile").innerHTML = "";
-  updateFilterOptions("mobile");
-  applyFiltersMobile();
-}
-
-function scrollDeals(direction) {
-  const wrapper = document.getElementById('dailyDealsWrapper');
-  const scrollAmount = 300;
-  wrapper.scrollLeft += (direction === 'left' ? -scrollAmount : scrollAmount);
-}
-
-const dynamicFilterData = {
-  Clothing: {
-    Size: ["Small", "Medium", "Large"],
-    Fabric: ["Cotton", "Silk", "Linen"],
-    Material: ["Gold", "Silver"]
-  },
-  Accessories: {
-    Shape: ["Round", "Square", "Oval"],
-    Color: ["Red", "Blue", "Green"]
-  },
-  Handicrafts: {
-    Craft: ["Embroidery", "Painting", "Weaving"],
-    Technique: ["Handmade", "Machine"]
-  },
-  "Home Decor": {
-    Material: ["Wood", "Glass", "Metal"],
-    Style: ["Modern", "Rustic", "Classic"]
-  }
-};
-</script>
+  
 </body>
 </html>

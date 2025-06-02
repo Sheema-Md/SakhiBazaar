@@ -5,7 +5,11 @@ $category = $_POST['category'];
 $price = $_POST['price'];
 $stock = $_POST['stock'];
 $quantity = $_POST['quantity'];
+$size = $_POST['size'];
+$color = $_POST['color'];
+$material= $_POST['material'];
 $description = $_POST['description'];
+
 
 $imagePath = null;
 if (!empty($_FILES['prod-img']['name'])) {
@@ -17,11 +21,11 @@ if (!empty($_FILES['prod-img']['name'])) {
 
 // Update logic
 if ($imagePath) {
-    $stmt = $conn->prepare("UPDATE products SET product_name=?, category=?, price=?, stock_status=?, quantity=?, description=?, image_url=? WHERE id=?");
-    $stmt->bind_param("ssdssssi", $name, $category, $price, $stock, $quantity, $description, $imagePath, $productId);
+    $stmt = $conn->prepare("UPDATE products SET product_name=?, category=?, price=?, stock_status=?, quantity=?,prod-color=?,prod-size=?,material=?, description=?, image_url=? WHERE id=?");
+    $stmt->bind_param("ssdsssssssi", $name, $category, $price, $stock, $quantity, $description, $imagePath, $productId);
 } else {
     $stmt = $conn->prepare("UPDATE products SET product_name=?, category=?, price=?, stock_status=?, quantity=?, description=? WHERE id=?");
-    $stmt->bind_param("ssdsssi", $name, $category, $price, $stock, $quantity, $description, $productId);
+    $stmt->bind_param("ssdssssssi", $name, $category, $price, $stock, $quantity, $description, $productId);
 }
 
 $stmt->execute();

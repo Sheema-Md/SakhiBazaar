@@ -49,6 +49,7 @@
     </form>
       </div>
 </aside>
+ 
 <script>
 document.getElementById('product-listing-toggle').addEventListener('click', function(e) {
     e.preventDefault(); // Prevents page reload
