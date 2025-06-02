@@ -170,7 +170,7 @@ $conn->close();
             $description = htmlspecialchars($product['description']);
             $price = number_format(floatval($product['price']), 2);
           ?>
-          <a href="productdetails.php?id=<?= $product['id'] ?>" style="text-decoration:none; color:inherit; display:block;">
+          <a href="edit_prod.php?id=<?= $product['id'] ?>" style="text-decoration:none; color:inherit; display:block;">
   <div class="product-card <?= $stock_class ?>">
 
             <div class="image-placeholder">

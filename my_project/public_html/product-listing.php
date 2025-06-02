@@ -36,7 +36,9 @@ $data = [
             <option>Urdu</option>
         </select>
         <i class="fas fa-bell notification-icon"><span class="badge">3</span></i>
-        <div class="profile-name"><?php echo htmlspecialchars($data['name']); ?></div>
+        <a href = "sellerprofile.php"  "style="text-decoration:none; color:inherit; display:block;">
+        <div class="profile-name"><?php echo htmlspecialchars($data['name']); ?></div></a>
+
     </header>
 
     <section class="product-listing-panel">
