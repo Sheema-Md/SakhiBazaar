@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Browse Products</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    body { font-family: sans-serif; margin: 0; padding: 20px; background: #f7f7f7; }
+    header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+    input[type="text"] { padding: 8px; width: 200px; }
+    .filters { margin-bottom: 20px; }
+    select { padding: 6px; margin-right: 10px; }
+
+    .product-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      gap: 20px;
+    }
+
+    .product-card {
+      background: white;
+      border-radius: 8px;
+      padding: 10px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      text-align: center;
+    }
+
+    .product-card img {
+      width: 100%;
+      height: 150px;
+      object-fit: cover;
+      border-radius: 6px;
+    }
+
+    .product-card button {
+      margin-top: 8px;
+      padding: 6px 10px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    @media (max-width: 600px) {
+      input[type="text"] {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <h2>🛍️ E-Shop</h2>
+  <input type="text" id="searchInput" placeholder="Search products..." oninput="filterProducts()" />
+</header>
+
+<div class="filters">
+  <label>Category:
+    <select id="categoryFilter" onchange="filterProducts()">
+      <option value="All">All</option>
+      <option value="Clothing">Clothing</option>
+      <option value="Accessories">Accessories</option>
+      <option value="Home">Home</option>
+    </select>
+  </label>
+</div>
+
+<div class="product-grid" id="productGrid">
+  <!-- Product cards go here -->
+</div>
+
+<script>
+  const products = [
+    { name: "Cotton T-Shirt", category: "Clothing", price: 499, img: "https://via.placeholder.com/200x150?text=Shirt" },
+    { name: "Silver Earrings", category: "Accessories", price: 899, img: "https://via.placeholder.com/200x150?text=Earrings" },
+    { name: "Wall Clock", category: "Home", price: 1200, img: "https://via.placeholder.com/200x150?text=Clock" },
+    { name: "Denim Jacket", category: "Clothing", price: 1500, img: "https://via.placeholder.com/200x150?text=Jacket" },
+    { name: "Leather Wallet", category: "Accessories", price: 999, img: "https://via.placeholder.com/200x150?text=Wallet" }
+  ];
+
+  function renderProducts(items) {
+    const container = document.getElementById("productGrid");
+    container.innerHTML = "";
+
+    if (items.length === 0) {
+      container.innerHTML = "<p>No products found.</p>";
+      return;
+    }
+
+    items.forEach(product => {
+      const card = document.createElement("div");
+      card.className = "product-card";
+      card.innerHTML = `
+        <img src="${product.img}" alt="${product.name}" />
+        <h4>${product.name}</h4>
+        <p>₹${product.price}</p>
+        <button>Add to Cart</button>
+      `;
+      container.appendChild(card);
+    });
+  }
+
+  function filterProducts() {
+    const search = document.getElementById("searchInput").value.toLowerCase();
+    const category = document.getElementById("categoryFilter").value;
+
+    const filtered = products.filter(p =>
+      (category === "All" || p.category === category) &&
+      p.name.toLowerCase().includes(search)
+    );
+
+    renderProducts(filtered);
+  }
+
+  // Initial render
+  renderProducts(products);
+</script>
+
+</body>
+</html>

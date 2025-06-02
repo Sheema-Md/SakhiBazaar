@@ -1,11 +1,53 @@
+<?php 
+session_start();
+if (!isset($_SESSION["loggedin"]) || $_SESSION["role"] !== 'seller') {
+    header("Location:../login.php");
+    exit();
+}
+require_once  __DIR__ . "/../config/config.php";
+require_once 'partials/header.php';
+
+
+require_once 'partials/sidebar.php';?>
+<div class="overlay" id="overlay"></div>
+<?php
+require_once 'models/SellerModel.php';
+$user_id = $_SESSION['id'];
+
+// or however you get the seller id
+$sellerModel = new SellerModel($conn);
+$data = [
+    'name' => $sellerModel->getSellerName($user_id),];
+?>
+
+
+  
+
+<main class="main-content">
+    <header class="topbar">
+        
+
+        <button class="hamburger" id="hamburger-btn"><i class="fas fa-bars"></i></button>
+        
+        <select class="language-select">
+            <option>English</option>
+            <option>Telugu</option>
+            <option>Hindi</option>
+            <option>Urdu</option>
+        </select>
+        <i class="fas fa-bell notification-icon"><span class="badge">3</span></i>
+        <a href = "sellerprofile.php"  "style="text-decoration:none; color:inherit; display:block;">
+        <div class="profile-name"><?php echo htmlspecialchars($data['name']); ?></div></a>
+
+    </header>
 <!-- Include Font Awesome in your <head> if not already present -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
     <style>
       /* Container styling and grid layout */
       .financial-resources {
-        padding: 40px 20px;
-        background: linear-gradient(135deg, #f3e8ff 0%, #ede7f6 100%);
+       
+        
         border-radius: 12px;
       }
     
@@ -99,7 +141,7 @@
           </div>
           <h3>Digital Payments</h3>
           <p>Learn how to use digital wallets and UPI safely for business transactions.</p>
-          <a href="#digital-payments" class="view-all-btn">Watch tutorial</a>
+          <a href="finance-literacy/digital-payments.php" class="view-all-btn">Watch tutorial</a>
         </div>
     
         <div class="resource-card">
@@ -108,7 +150,7 @@
           </div>
           <h3>Bookkeeping Basics</h3>
           <p>Understand the fundamentals of tracking income, expenses, and profits.</p>
-          <a href="#bookkeeping-basics" class="view-all-btn">Start learning</a>
+          <a href="finance-literacy/bookkeeping.php" class="view-all-btn">Start learning</a>
         </div>
     
         <div class="resource-card">
@@ -117,7 +159,7 @@
           </div>
           <h3>Cybersecurity Tips</h3>
           <p>Protect your devices and accounts from fraud and cyber threats.</p>
-          <a href="#cybersecurity-tips" class="view-all-btn">Explore safety tips</a>
+          <a href="finance-literacy/cybersecurity-tips.php" class="view-all-btn">Explore safety tips</a>
         </div>
     
         <div class="resource-card">
@@ -126,7 +168,7 @@
           </div>
           <h3>Smart Budgeting</h3>
           <p>Discover techniques to manage your finances effectively and plan ahead.</p>
-          <a href="#smart-budgeting" class="view-all-btn">Read article</a>
+          <a href="finance-literacy/smart-budgeting.php" class="view-all-btn">Read article</a>
         </div>
     
         <div class="resource-card">
@@ -135,7 +177,7 @@
           </div>
           <h3>Access to Loans</h3>
           <p>Explore different types of loans available for small businesses and how to apply.</p>
-          <a href="#access-to-loans" class="view-all-btn">View details</a>
+          <a href="finance-literacy/access-to-loans.php" class="view-all-btn">View details</a>
         </div>
     
         <div class="resource-card">
@@ -144,7 +186,7 @@
           </div>
           <h3>Government Schemes</h3>
           <p>Learn about government support schemes tailored for women entrepreneurs.</p>
-          <a href="#government-schemes" class="view-all-btn">See schemes</a>
+          <a href="finance-literacy/government-schemes.php" class="view-all-btn">See schemes</a>
         </div>
     
       </div>

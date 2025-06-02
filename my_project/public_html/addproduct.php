@@ -10,7 +10,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
     $category = $conn->real_escape_string($_POST['category']);
     $price = floatval($_POST['price']);
     $quantity = intval($_POST['quantity']);
-    $order_type = $_POST['order-type'];
+    $color = $conn->real_escape_string($_POST['color']);
+    $size = $conn->real_escape_string($_POST['size']);
+    $material = $conn->real_escape_string($_POST['material']);
+   
     $description = $conn->real_escape_string($_POST['description']);
     $status = ($_POST['action'] === 'publish') ? 'published' : 'draft';
 
@@ -26,8 +29,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
     $user_id = $_SESSION['id']; // Replace with actual session logic
 
     // Insert query
-    $sql = "INSERT INTO products (user_id, product_name, description, price, image_url, quantity, stock_status, order_type, status)
-            VALUES ('$user_id', '$name', '$description', '$price', '$imagePath', '$quantity', 'in_stock', '$order_type', '$status')";
+    $sql = "INSERT INTO products (user_id, product_name, description, price, `prod-color`, `prod-size`, material,  image_url, quantity, stock_status,status )
+            VALUES ('$user_id', '$name', '$description', '$price', '$color','$size','$material','$imagePath', '$quantity', 'in_stock', '$status')";
 
     if ($conn->query($sql)) {
     echo "<script>alert('✅ Product added successfully!'); window.location.href = 'seller_dashboard2.php';</script>";
@@ -170,16 +173,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
           <input type="number" name="quantity" placeholder="Enter available stock" />
         </div>
       </div>
+         <div class="form-group">
+          <label><i class="fas fa-palette"></i>Color</label>
+          <input type="text" name="color" placeholder="Enter color (e.g., Red, Blue)" />
+        </div>
 
-      <div class="form-group">
-        <label><i class="fas fa-money-bill-wave"></i>Order Type</label>
-        <select name="order-type">
-          <option value="">Select Order Type</option>
-          <option value="cod">Cash on Delivery</option>
-          <option value="request">Order Request</option>
-        </select>
-      </div>
+        <div class="form-group">
+          <label><i class="fas fa-ruler-combined"></i>Size(s)</label>
+          <input type="text" name="size" placeholder="Enter sizes (comma-separated: S, M, L)" />
+        </div>
 
+        <div class="form-group">
+          <label><i class="fas fa-cube"></i>Material</label>
+          <input type="text" name="material" placeholder="Enter material (e.g., Cotton, Wood)" />
+        </div>
+
+       
+      
+    
       <!-- 2. Product Image Upload -->
       <div class="form-section">
         <h3>2. Product Image Upload</h3>
@@ -219,6 +230,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
              preview.appendChild(img);
            }
          }
+          
              function goBack() {
       if (document.referrer) {
         window.history.back();

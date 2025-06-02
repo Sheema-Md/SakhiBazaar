@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Digital Payments</title>
+    <link rel="icon" href="favicon.ico" type="image/x-icon">
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #9b386a;
+            margin: 0;
+            padding: 0;
+        }
+
+        header {
+            background-color:#9b386a;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+        main {
+            padding: 20px;
+        }
+
+        section {
+            margin-bottom: 30px;
+            background-color: white;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 0 5px rgba(0,0,0,0.1);
+        }
+
+        h2 {
+            color:#9b386a;
+        }
+
+        ul {
+            padding-left: 20px;
+        }
+
+        img {
+            max-width: 100%;
+            border-radius: 8px;
+            margin: 10px 0;
+        }
+
+        iframe {
+            width: 100%;
+            height: 315px;
+            border: none;
+            border-radius: 8px;
+            margin-top: 10px;
+        }
+
+        footer {
+            background-color: #343a40;
+            color: white;
+            text-align: center;
+            padding: 15px;
+            margin-top: 30px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Digital Payments</h1>
+        <p>Learn how to use digital wallets and UPI safely for business transactions</p>
+    </header>
+
+    <main>
+        <section>
+            <h2>What Are Digital Wallets?</h2>
+            <p>Digital wallets store your payment information securely and allow you to make transactions using your smartphone or computer.</p>
+            <img src="<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Digital Payments</title>
+    <link rel="icon" href="favicon.ico" type="image/x-icon">
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f8f9fa;
+            margin: 0;
+            padding: 0;
+        }
+
+        header {
+            background-color: #800080;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+        main {
+            padding: 20px;
+        }
+
+        section {
+            margin-bottom: 30px;
+            background-color: white;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 0 5px rgba(0,0,0,0.1);
+        }
+
+        h2 {
+            color: #800080;
+        }
+
+        ul {
+            padding-left: 20px;
+        }
+
+        img {
+            max-width: 100%;
+            border-radius: 8px;
+            margin: 10px 0;
+        }
+
+        iframe {
+            width: 100%;
+            height: 315px;
+            border: none;
+            border-radius: 8px;
+            margin-top: 10px;
+        }
+        footer {
+            background-color: #343a40;
+            color: white;
+            text-align: center;
+            padding: 15px;
+            margin-top: 30px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Digital Payments</h1>
+        <p>Learn how to use digital wallets and UPI safely for business transactions</p>
+    </header>
+
+    <main>
+        <section>
+            <h2>What Are Digital Wallets?</h2>
+            <p>Digital wallets store your payment information securely and allow you to make transactions using your smartphone or computer.</p>
+            <img src="C:\Users\supri\OneDrive\Desktop\digita_img.jpg" alt="Digital Wallet Image">
+            <iframe src="https://youtu.be/S_Im0Yrltkk?si=uhPAmguHi1laO4h3" title="How Digital Wallets Work" allowfullscreen></iframe>
+        </section>
+
+        <section>
+            <h2>What is UPI?</h2>
+            <p>UPI (Unified Payments Interface) is a real-time payment system developed by NPCI that allows fund transfer between two bank accounts on a mobile platform.</p>
+            <img src="upi-transfer.png" alt="UPI Transfer Image">
+            <iframe src="https://youtu.be/dOcq91qxQb4?si=v860Fj8-uF5Z64V" title="Understanding UPI in India" allowfullscreen></iframe>
+        </section>
+
+        <section>
+            <h2>Safety Tips for Using Digital Payments</h2>
+            <ul>
+                <li>Use official apps from trusted providers (e.g., Google Pay, PhonePe, Paytm).</li>
+                <li>Enable two-factor authentication for added security.</li>
+                <li>Never share your UPI PIN or OTP with anyone.</li>
+                <li>Regularly review your transaction history.</li>
+                <li>Set transaction limits to prevent large unauthorized transfers.</li>
+            </ul>
+            <img src="digital-wallet-guide.jpg" alt="Secure Payment Image">
+            <iframe src="https://youtu.be/SUrYcVattHE?si=s2uCJ4WuTZWt0djl" title="How to Stay Safe While Using UPI" allowfullscreen></iframe>
+        </section>
+    </main>    
+</body>
+</h
+        </section>
+     </main>
+    <footer>
+        <p>&copy; 2025 Digital Payments Education Portal</p>
+    </footer>
+</body>
+</html>

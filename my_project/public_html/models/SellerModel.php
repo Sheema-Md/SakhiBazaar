@@ -166,7 +166,7 @@ class SellerModel {
                     $stockClass = ($row['quantity'] == 0) ? 'out-of-stock' : (($row['quantity'] <= 5) ? 'low-stock' : 'in-stock');
                 ?>
                <div class="product-card <?php echo $stockClass; ?>">
-    <a href="productdetails.php?id=<?php echo $row['id']; ?>" style="text-decoration: none; color: inherit;">
+    <a href="edit_prod.php?id=<?php echo $row['id']; ?>" style="text-decoration: none; color: inherit;">
         <div class="image-placeholder">
             <?php if (!empty($row['image_url'])): ?>
                 <img src="<?php echo htmlspecialchars($row['image_url']); ?>" alt="<?php echo htmlspecialchars($row['product_name']); ?>" style="width:100%;height:auto;">
@@ -232,7 +232,7 @@ while ($row = $result->fetch_assoc()) {
     $imagePath = !empty($row['image_url']) ? htmlspecialchars($row['image_url']) : '../images/placeholder.png';
 
    $html .= '
-    <a href="productdetails.php?id=' . $row['id'] . '" style="text-decoration:none; color:inherit; display:block;">
+    <a href="edit_prod.php?id=' . $row['id'] . '" style="text-decoration:none; color:inherit; display:block;">
         <div class="product-card">
             <div class="image-placeholder">
                 <img src="' . $imagePath . '" alt="' . htmlspecialchars($row['product_name']) . '" class="product-image">
@@ -264,7 +264,7 @@ public function getListedProductsHTML($userId) {
                 $stockClass = ($row['quantity'] == 0) ? 'out-of-stock' : (($row['quantity'] <= 5) ? 'low-stock' : 'in-stock');
                 $imagePath = !empty($row['image_url']) ?  $row['image_url'] : 'images/placeholder.png';
             ?>
-           <a href="productdetails.php?id=<?= $row['id'] ?>" style="text-decoration:none; color:inherit; display:block;">
+           <a href="edit_prod.php?id=<?= $row['id'] ?>" style="text-decoration:none; color:inherit; display:block;">
             <div class="product-card <?php echo $stockClass; ?>">
                 <div class="image-placeholder">
                     <img src="<?php echo htmlspecialchars($imagePath); ?>" alt="<?php echo htmlspecialchars($row['product_name']); ?>" style="width:100%;height:auto;">
