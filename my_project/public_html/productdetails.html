@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Product Details - Sakhi Bazaar</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+      padding: 0;
+      background: #f5f5f5;
+      color: #333;
+    }
+    .container {
+      max-width: 1200px;
+      margin: 30px auto;
+      background: white;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    .product-display {
+      display: flex;
+      gap: 30px;
+      flex-wrap: wrap;
+    }
+    .image-gallery {
+      flex: 1;
+      min-width: 300px;
+    }
+    .image-gallery img {
+      width: 100%;
+      max-height: 400px;
+      object-fit: cover;
+      border-radius: 10px;
+    }
+    .product-info {
+      flex: 2;
+      min-width: 300px;
+    }
+    .product-info h1 {
+      margin: 0;
+      font-size: 28px;
+    }
+    .price {
+      font-size: 24px;
+      color: #8e24aa;
+      margin-top: 10px;
+    }
+    .ratings {
+      margin: 10px 0;
+    }
+    .star {
+      color: gold;
+    }
+    .badge, .dropdown {
+      display: inline-block;
+      background: #f3e5f5;
+      color: #6a1b9a;
+      border-radius: 8px;
+      padding: 5px 10px;
+      margin: 5px 5px 0 0;
+      font-size: 14px;
+    }
+    .section {
+      margin-top: 20px;
+    }
+    .actions button {
+      margin-right: 10px;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 8px;
+      background-color: #8e24aa;
+      color: white;
+      cursor: pointer;
+      font-size: 16px;
+    }
+    .actions button:hover {
+      background-color: #6a1b9a;
+    }
+    .seller-info {
+      margin-top: 20px;
+      font-style: italic;
+    }
+    .reviews {
+      margin-top: 40px;
+    }
+    .review-card {
+      background: #fafafa;
+      padding: 15px;
+      border-radius: 8px;
+      margin-bottom: 10px;
+      border-left: 4px solid #8e24aa;
+    }
+    .review-form textarea, .review-form input {
+      width: 100%;
+      padding: 10px;
+      margin-top: 10px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+    }
+    .review-form button {
+      margin-top: 10px;
+      padding: 8px 16px;
+      background-color: #8e24aa;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    .review-form button:hover {
+      background-color: #6a1b9a;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="product-display">
+      <div class="image-gallery">
+        <img src="product1.jpg" alt="Product Image">
+      </div>
+      <div class="product-info">
+        <h1>Handwoven Cotton Saree</h1>
+        <div class="price">₹1299</div>
+        <div class="ratings">
+          <span class="star">★ ★ ★ ★ ☆</span> (32 reviews)
+        </div>
+        <div class="section">
+          <strong>Description:</strong>
+          <p>Beautiful handwoven cotton saree made by local artisans. Comfortable for all seasons with elegant designs.</p>
+        </div>
+        <div class="section">
+          <strong>Sizes Available:</strong><br>
+          <span class="badge">S</span>
+          <span class="badge">M</span>
+          <span class="badge">L</span>
+        </div>
+        <div class="section">
+          <strong>Color:</strong> Violet<br>
+          <strong>Material:</strong> Pure Cotton<br>
+          <strong>Order Type:</strong> Pre-order<br>
+          <strong>Delivery Type:</strong> Standard<br>
+          <strong>Shipping:</strong> ₹100 all over India
+        </div>
+        <div class="section actions">
+          <button>Add to Cart</button>
+          <button>Buy Now</button>
+          <button>♡ Wishlist</button>
+          <button>🔗 Share</button>
+        </div>
+        <div class="seller-info">
+          Sold by: <strong class="seller-name">SHG Pragati Mahila Mandal</strong>
+        </div>
+      </div>
+    </div>
+
+    <div class="reviews">
+      <h2>Customer Reviews</h2>
+      <div class="review-card">
+        <strong>Priya S. ★★★★☆</strong>
+        <p>Soft fabric and beautiful color. Delivery took a bit long but worth the wait!</p>
+      </div>
+      <div class="review-card">
+        <strong>Anita D. ★★★★★</strong>
+        <p>Loved it! Looks just like the pictures.</p>
+      </div>
+
+      <div class="review-form">
+        <h3>Add Your Review</h3>
+        <form method="POST" action="submit_review.php">
+          <input type="text" name="name" placeholder="Your Name" required>
+          <textarea name="review" placeholder="Write your review here..." required></textarea>
+          <input type="number" name="rating" min="1" max="5" placeholder="Rating (1-5)" required>
+          <button type="submit">Submit Review</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
