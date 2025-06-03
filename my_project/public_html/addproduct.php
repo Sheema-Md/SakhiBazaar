@@ -215,6 +215,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
       </div>
     </form>
   </div>
+ 
   <script>
          function previewImages(event) {
            const preview = document.getElementById('imagePreview');
@@ -239,6 +240,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
       }
     }
        </script>
+        <script src = "js/script.js"></script>
      </body>
      </html>
-     
+     <?php require_once 'partials/footer.php'; ?>

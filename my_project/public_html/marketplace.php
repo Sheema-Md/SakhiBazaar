@@ -1,4 +1,24 @@
 <?php include "functions.php" ?>
+<?php 
+session_start();
+if (!isset($_SESSION["loggedin"]) || $_SESSION["role"] !== 'seller') {
+    header("Location:../login.php");
+    exit();
+}
+require_once  __DIR__ . "/../config/config.php";
+
+
+
+
+require_once 'models/SellerModel.php';
+$user_id = $_SESSION['id'];
+
+// or however you get the seller id
+$sellerModel = new SellerModel($conn);
+$data = [
+    'name' => $sellerModel->getSellerName($user_id),];
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -8,13 +28,32 @@
 <link rel="stylesheet" href="css/sell_dash_style.css"/>
 <link rel="stylesheet" href="css/market.css"/>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+    
+    <!-- other assets -->
 </head>
+
 <body>
  
    <!-- Link to the javascript file -->
    
   
     <div class="header-container">
+      <header class="topbar">
+        
+
+        <button class="hamburger" id="hamburger-btn"><i class="fas fa-bars"></i></button>
+       
+        <select class="language-select">
+            <option>English</option>
+            <option>Telugu</option>
+            <option>Hindi</option>
+            <option>Urdu</option>
+        </select>
+        <i class="fas fa-bell notification-icon"><span class="badge">3</span></i>
+        <a href = "sellerprofile.php"  "style="text-decoration:none; color:inherit; display:block;">
+        <div class="profile-name"><?php echo htmlspecialchars($data['name']); ?></div></a>
+
+    </header>
     <header>
         <div class="search-container">
             <input type="text" id="searchBox" placeholder="Search products..." />
@@ -25,6 +64,7 @@
             <i class="fas fa-heart" title="Wishlist"></i>
             <i class="fas fa-shopping-cart" title="Cart"></i>
         </div>
+        
     </header>
 </div>
 
@@ -171,7 +211,9 @@
 </div>
 
   </section>
-
+<script src = "js/script.js"></script>
 <script src="market.js"></script> 
+ 
 </body>
 </html>
+<?php require_once 'partials/footer.php'; ?>

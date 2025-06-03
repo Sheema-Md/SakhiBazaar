@@ -180,5 +180,7 @@ ccess Stories</title>
 
     </section>
   </div>
+   <script src = "js/script.js"></script>
 </body>
 </html>
+<?php require_once 'partials/footer.php'; ?>

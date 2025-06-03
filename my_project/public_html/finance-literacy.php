@@ -5,12 +5,10 @@ if (!isset($_SESSION["loggedin"]) || $_SESSION["role"] !== 'seller') {
     exit();
 }
 require_once  __DIR__ . "/../config/config.php";
-require_once 'partials/header.php';
 
 
-require_once 'partials/sidebar.php';?>
-<div class="overlay" id="overlay"></div>
-<?php
+
+
 require_once 'models/SellerModel.php';
 $user_id = $_SESSION['id'];
 
@@ -20,31 +18,15 @@ $data = [
     'name' => $sellerModel->getSellerName($user_id),];
 ?>
 
-
-  
-
-<main class="main-content">
-    <header class="topbar">
-        
-
-        <button class="hamburger" id="hamburger-btn"><i class="fas fa-bars"></i></button>
-        
-        <select class="language-select">
-            <option>English</option>
-            <option>Telugu</option>
-            <option>Hindi</option>
-            <option>Urdu</option>
-        </select>
-        <i class="fas fa-bell notification-icon"><span class="badge">3</span></i>
-        <a href = "sellerprofile.php"  "style="text-decoration:none; color:inherit; display:block;">
-        <div class="profile-name"><?php echo htmlspecialchars($data['name']); ?></div></a>
-
-    </header>
-<!-- Include Font Awesome in your <head> if not already present -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-
-    <style>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SakhiBazaar Finance & Literacy</title>
+  <style>
       /* Container styling and grid layout */
+      
       .financial-resources {
        
         
@@ -129,6 +111,28 @@ $data = [
         }
       }
     </style>
+
+<main class="finance-content">
+    <header class="topbar">
+        
+
+        <button class="hamburger" id="hamburger-btn"><i class="fas fa-bars"></i></button>
+        
+        <select class="language-select">
+            <option>English</option>
+            <option>Telugu</option>
+            <option>Hindi</option>
+            <option>Urdu</option>
+        </select>
+        <i class="fas fa-bell notification-icon"><span class="badge">3</span></i>
+        <a href = "sellerprofile.php"  "style="text-decoration:none; color:inherit; display:block;">
+        <div class="profile-name"><?php echo htmlspecialchars($data['name']); ?></div></a>
+
+    </header>
+<!-- Include Font Awesome in your <head> if not already present -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+    
     
     <!-- Financial Literacy & Safety Resources Section -->
     <section class="financial-resources">
@@ -191,4 +195,5 @@ $data = [
     
       </div>
     </section>
-    
+     <script src = "js/script.js"></script>
+     <?php require_once 'partials/footer.php'; ?>
