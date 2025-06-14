@@ -50,7 +50,7 @@ $conn->close();
           <label class="block text-purple-800 font-medium">Category</label>
           <select name="category" class="w-full p-2 border rounded bg-purple-50">
             <?php
-              $categories = ["👗 Clothing", "👜 Accessories", "🪡 Handicrafts", "🏠 Home Decor", "❔Other"];
+              $categories = ["Clothing", "Accessories", "Handicrafts", "Home Decor", "Other"];
               foreach ($categories as $cat) {
                 $selected = $product['category'] == $cat ? "selected" : "";
                 echo "<option value='$cat' $selected>$cat</option>";
@@ -111,5 +111,7 @@ $conn->close();
       <a href="delete_product.php?id=<?= $product['id'] ?>" onclick="return confirm('Are you sure?')" class="bg-red-500 text-white px-6 py-2 rounded hover:bg-red-600">Delete Product</a>
     </div>
   </form>
+   <script src = "js/script.js"></script>
 </body>
 </html>
+<?php require_once 'partials/footer.php'; ?>

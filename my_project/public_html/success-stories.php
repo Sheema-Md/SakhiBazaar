@@ -107,7 +107,7 @@ ccess Stories</title>
       <h2>Success Stories</h2>
 
       <div class="resource-card">
-        <img src="https://images.pexels.com/photos/5996804/pexels-photo-5996804.jpeg?auto=compress&cs=tinysrgb&w=800" alt="Rani Devi">
+        <img src="images\WhatsApp Image 2025-06-03 at 7.46.32 PM.jpeg" alt="Rani Devi">
         <div class="card-content">
           <h3>Rani Devi</h3>
           <p class="story-summary">
@@ -119,7 +119,7 @@ ccess Stories</title>
       </div>
 
       <div class="resource-card">
-        <img src="https://via.placeholder.com/180x150?text=Savita+Kumari" alt="Savita Kumari">
+        <img src="images\WhatsApp Image 2025-06-03 at 7.46.33 PM (1).jpeg" alt="Savita Kumari">
         <div class="card-content">
           <h3>Savita Kumari</h3>
           <p class="story-summary">
@@ -131,7 +131,7 @@ ccess Stories</title>
       </div>
 
       <div class="resource-card">
-        <img src="https://via.placeholder.com/180x150?text=Meena+Patel" alt="Meena Patel">
+        <img src="images\WhatsApp Image 2025-06-03 at 7.46.33 PM (2).jpeg" alt="Meena Patel">
         <div class="card-content">
           <h3>Meena Patel</h3>
           <p class="story-summary">
@@ -143,7 +143,7 @@ ccess Stories</title>
       </div>
 
       <div class="resource-card">
-        <img src="https://via.placeholder.com/180x150?text=Kavita+Joshi" alt="Kavita Joshi">
+        <img src="images\WhatsApp Image 2025-06-03 at 7.46.33 PM.jpeg" alt="Kavita Joshi">
         <div class="card-content">
           <h3>Kavita Joshi</h3>
           <p class="story-summary">
@@ -155,7 +155,7 @@ ccess Stories</title>
       </div>
 
       <div class="resource-card">
-        <img src="https://images.pexels.com/photos/7919428/pexels-photo-7919428.jpeg?auto=compress&cs=tinysrgb&w=800" alt="Pushpa Rani">
+        <img src="images\WhatsApp Image 2025-06-03 at 7.46.32 PM (1).jpeg" alt="Pushpa Rani">
         <div class="card-content">
           <h3>Pushpa Rani</h3>
           <p class="story-summary">
@@ -167,7 +167,7 @@ ccess Stories</title>
       </div>
 
       <div class="resource-card">
-        <img src="https://via.placeholder.com/180x150?text=Shanti+Bai" alt="Shanti Bai">
+        <img src="https://hutsandlooms.com/cdn/shop/articles/Success_Stories_of_Rural_Female_Entrepreneurs.png?crop=center&height=1200&v=1722412183&width=1200" alt="Shanti Bai">
         <div class="card-content">
           <h3>Shanti Bai</h3>
           <p class="story-summary">
@@ -180,5 +180,7 @@ ccess Stories</title>
 
     </section>
   </div>
+   <script src = "js/script.js"></script>
 </body>
 </html>
+<?php require_once 'partials/footer.php'; ?>

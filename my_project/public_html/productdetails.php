@@ -1,13 +1,119 @@
+<?php
+require_once  __DIR__ . "/../config/config.php";
+
+
+session_start();
+
+if (isset($_GET['id'])) {
+    $product_id = intval($_GET['id']);
+
+    // Fetch product with seller name
+    $stmt = $conn->prepare("
+        SELECT p.*, u.name AS seller_name 
+        FROM products p
+        JOIN users u ON p.user_id = u.id 
+        WHERE p.id = ?
+    ");
+    $stmt->bind_param("i", $product_id);
+    $stmt->execute();
+    $result = $stmt->get_result();
+
+    if ($result->num_rows > 0) {
+        $product = $result->fetch_assoc();
+    } else {
+        echo "Product not found.";
+        exit;
+    }
+    $stmt->close();
+
+    // Fetch reviews for product
+    $reviews = [];
+    $stmt = $conn->prepare("SELECT name, review, rating FROM reviews WHERE product_id = ? ORDER BY created_at DESC");
+    $stmt->bind_param("i", $product_id);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    while ($row = $result->fetch_assoc()) {
+        $reviews[] = $row;
+    }
+    $stmt->close();
+    $stmt = $conn->prepare("SELECT COUNT(*) AS review_count FROM reviews WHERE product_id = ?");
+$stmt->bind_param("i", $product_id);
+$stmt->execute();
+$stmt->bind_result($review_count);
+$stmt->fetch();
+$stmt->close();
+
+// Store in product array if needed
+$product['reviews_count'] = $review_count;
+
+    // Stock logic
+    $stock = (int)$product['quantity'];
+    if ($stock > 10) {
+        $stock_class = "in-stock";
+        $stock_label = "In stock";
+    } elseif ($stock > 0) {
+        $stock_class = "low-stock";
+        $stock_label = "Low stock";
+    } else {
+        $stock_class = "out-of-stock";
+        $stock_label = "Out of stock";
+    }
+
+    // Rating logic
+    $displayRating = round(floatval($product['rating']) * 2) / 2;
+    $fullStars = floor($displayRating);
+    $halfStar = ($displayRating - $fullStars) == 0.5;
+    $emptyStars = 5 - $fullStars - ($halfStar ? 1 : 0);
+    $stars_html = str_repeat("★", $fullStars);
+    if ($halfStar) $stars_html .= "½";
+    $stars_html .= str_repeat("☆", $emptyStars);
+
+    // Check if user is logged in and bought the product (for review permission)
+    $can_review = false;
+    $reviewer_name = "";
+    if (isset($_SESSION['id'])) {
+    $user_id = $_SESSION['id'];
+
+    $stmt = $conn->prepare("
+        SELECT COUNT(*) 
+        FROM orders
+        WHERE buyer_id = ? AND product_id = ? AND status = 'completed'
+    ");
+    $stmt->bind_param("ii", $user_id, $product_id);
+    $stmt->execute();
+    $stmt->bind_result($purchaseCount);
+    $stmt->fetch();
+    $stmt->close();
+
+    if ($purchaseCount > 0) {
+        $can_review = true;
+        // Fetch user name for review form if needed
+        $stmt = $conn->prepare("SELECT name FROM users WHERE id = ?");
+        $stmt->bind_param("i", $user_id);
+        $stmt->execute();
+        $stmt->bind_result($reviewer_name);
+        $stmt->fetch();
+        $stmt->close();
+    }
+}
+} else {
+    echo "No product ID provided.";
+    exit;
+}
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Product Details - Sakhi Bazaar</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+
   <!-- Bootstrap CSS -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <!-- Bootstrap JS Bundle -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
   <style>
     body {
       font-family: 'Segoe UI', sans-serif;
@@ -32,10 +138,12 @@
     .image-gallery {
       flex: 1;
       min-width: 300px;
+      max-width: 500px;
+      height: auto;
     }
     .image-gallery img {
       width: 100%;
-      max-height: 400px;
+      height: 400px;
       object-fit: cover;
       border-radius: 10px;
     }
@@ -150,6 +258,18 @@
     .review-form button:hover {
       background-color: #6a1b9a;
     }
+    .stock.in-stock {
+      color: green;
+      font-weight: bold;
+    }
+    .stock.low-stock {
+      color: orange;
+      font-weight: bold;
+    }
+    .stock.out-of-stock {
+      color: red;
+      font-weight: bold;
+    }
     ul.highlights {
       list-style: disc;
       margin-left: 20px;
@@ -169,34 +289,31 @@
     }
   </style>
 </head>
+
+
+
 <body>
-  <div class="container">
+<div class="container">
     <div class="product-display">
       <div class="image-gallery">
-        <img src="product1.jpg" alt="Product Image">
+        <img src="<?= htmlspecialchars($product['image_url']) ?>" alt="Product Image">
       </div>
       <div class="product-info">
-        <h1>Handwoven Cotton Saree</h1>
-        <div class="price">₹1299</div>
-        <div class="shipping">Shipping: ₹100 all over India</div>
-        <div class="ratings">
-          <span class="star">★ ★ ★ ★ ☆</span> (32 reviews)
+        <h1><?= htmlspecialchars($product['product_name']) ?></h1>
+        <div class="price">₹<?= htmlspecialchars($product['price']) ?></div>
+       <div class="ratings">
+  <span class="star"><?= $stars_html ?></span>
+  (<?= htmlspecialchars($product['reviews_count'] ?? '0') ?> reviews)
+</div>
+
+        <div class="stock <?= $stock_class ?>">
+          <?= $stock_label ?>
         </div>
 
         <div class="section">
           <strong>Description:</strong>
-          <p>Beautiful handwoven cotton saree made by local artisans. Comfortable for all seasons with elegant designs.</p>
+          <p><?= htmlspecialchars($product['description']) ?></p>
         </div>
-
-        <div class="section">
-          <strong>Product Highlights:</strong>
-          <ul class="highlights">
-            <li>Pure 100% cotton</li>
-            <li>Handwoven by artisans</li>
-            <li>Breathable fabric for all seasons</li>
-          </ul>
-        </div>
-
         <div class="section">
           <strong>Sizes Available:</strong><br>
           <span class="badge">S</span>
@@ -204,51 +321,63 @@
           <span class="badge">L</span>
           <span class="badge">Free Size</span>
         </div>
-
         <div class="section">
-          <strong>Color:</strong> Violet<br>
-          <strong>Material:</strong> Pure Cotton
+          <strong>Color:</strong> <?= htmlspecialchars($product['prod-color']) ?><br>
+          <strong>Material:</strong> <?= htmlspecialchars($product['material']) ?><br>
         </div>
-
         <div class="section actions">
           <button>Add to Cart</button>
           <button data-bs-toggle="modal" data-bs-target="#buyNowModal">Buy Now</button>
           <button class="wishlist-btn" aria-label="Add to Wishlist">♡</button>
           <button>🔗 Share</button>
         </div>
-
         <div class="seller-info">
-          Sold by: <strong class="seller-name">SHG Pragati Mahila Mandal</strong>
-          <button class="view-shop">View Shop</button>
+          Sold by: <strong class="seller-name"><?= htmlspecialchars($product['seller_name']) ?></strong>
         </div>
       </div>
     </div>
 
     <div class="reviews">
       <h2>Customer Reviews</h2>
-      <div class="review-card">
-        <strong>Priya S. ★★★★☆</strong>
-        <p>Soft fabric and beautiful color. Delivery took a bit long but worth the wait!</p>
-      </div>
-      <div class="review-card">
-        <strong>Anita D. ★★★★★</strong>
-        <p>Loved it! Looks just like the pictures.</p>
-      </div>
+      <?php if (count($reviews) > 0): ?>
+        <?php foreach ($reviews as $rev): ?>
+          <div class="review-card">
+            <strong><?= htmlspecialchars($rev['name']) ?> 
+              <?php
+                $fullStars = floor($rev['rating']);
+                $emptyStars = 5 - $fullStars;
+                echo str_repeat("★", $fullStars);
+                echo str_repeat("☆", $emptyStars);
+              ?>
+            </strong>
+            <p><?= nl2br(htmlspecialchars($rev['review'])) ?></p>
+          </div>
+        <?php endforeach; ?>
+      <?php else: ?>
+        <p>No reviews yet. Be the first to review!</p>
+      <?php endif; ?>
 
       <div class="review-form">
         <h3>Add Your Review</h3>
-        <form method="POST" action="submit_review.php">
-          <input type="text" name="name" placeholder="Your Name" required>
-          <textarea name="review" placeholder="Write your review here..." required></textarea>
-          <input type="number" name="rating" min="1" max="5" placeholder="Rating (1-5)" required>
-          <button type="submit">Submit Review</button>
-        </form>
+        <?php if (isset($_SESSION['id'])): ?>
+            <?php if ($can_review): ?>
+              <form method="POST" action="submit_review.php">
+                <input type="hidden" name="product_id" value="<?= $product_id ?>">
+                <input type="text" name="name" placeholder="Your Name" required value="<?= htmlspecialchars($reviewer_name) ?>">
+                <textarea name="review" placeholder="Write your review here..." required></textarea>
+                <input type="number" name="rating" min="1" max="5" placeholder="Rating (1-5)" required>
+                <button type="submit">Submit Review</button>
+              </form>
+            <?php else: ?>
+              <p><em>Only verified buyers can submit a review.</em></p>
+            <?php endif; ?>
+        <?php else: ?>
+          <p><a href="login.php">Log in</a> to submit a review.</p>
+        <?php endif; ?>
       </div>
     </div>
   </div>
-
-  <!-- Buy Now Modal -->
-  <div class="modal fade" id="buyNowModal" tabindex="-1" aria-labelledby="buyNowModalLabel" aria-hidden="true">
+    <div class="modal fade" id="buyNowModal" tabindex="-1" aria-labelledby="buyNowModalLabel" aria-hidden="true">
     <div class="modal-dialog">
       <div class="modal-content">
         <form action="review_order.php" method="GET">
@@ -284,8 +413,8 @@
       </div>
     </div>
   </div>
-
-  <script>
+</body>
+<script>
     // Wishlist button toggle effect
     const wishlistBtn = document.querySelector('.wishlist-btn');
     wishlistBtn.addEventListener('click', () => {
@@ -318,3 +447,5 @@
   </script>
 </body>
 </html>
+
+
