@@ -100,6 +100,10 @@ document.addEventListener("DOMContentLoaded", function () {
     </section>
 
 
+
+
+
+
 <script>
 document.querySelectorAll('.tab-btn').forEach(button => {
     button.addEventListener('click', () => {

@@ -29,8 +29,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
     $user_id = $_SESSION['id']; // Replace with actual session logic
 
     // Insert query
-    $sql = "INSERT INTO products (user_id, product_name, description, price, `prod-color`, `prod-size`, material,  image_url, quantity, stock_status,status )
-            VALUES ('$user_id', '$name', '$description', '$price', '$color','$size','$material','$imagePath', '$quantity', 'in_stock', '$status')";
+    $sql = "INSERT INTO products (user_id, product_name, description, price, `prod-color`, `prod-size`, material,  image_url, quantity, stock_status,status,category )
+            VALUES ('$user_id', '$name', '$description', '$price', '$color','$size','$material','$imagePath', '$quantity', 'in_stock', '$status','$category')";
 
     if ($conn->query($sql)) {
     echo "<script>alert('✅ Product added successfully!'); window.location.href = 'seller_dashboard2.php';</script>";
@@ -157,11 +157,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
           <label><i class="fas fa-list"></i>Category</label>
           <select name="category">
             <option value="">Select Category</option>
-            <option value="Clothing">👗 Clothing</option>
-            <option value="Accessories">👜 Accessories</option>
-            <option value="Handicrafts">🪡 Handicrafts</option>
-            <option value="Home Decor">🏠 Home Decor</option>
-            <option value="Other">❔ Other</option>
+            <option value="Clothing">Clothing</option>
+            <option value="Accessories">Accessories</option>
+            <option value="Handicrafts">Handicrafts</option>
+            <option value="Home Decor">Home Decor</option>
+            <option value="Other">Other</option>
           </select>
         </div>
         <div class="form-group">
@@ -215,6 +215,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
       </div>
     </form>
   </div>
+ 
   <script>
          function previewImages(event) {
            const preview = document.getElementById('imagePreview');
@@ -239,6 +240,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
       }
     }
        </script>
+        <script src = "js/script.js"></script>
      </body>
      </html>
-     
+     <?php require_once 'partials/footer.php'; ?>

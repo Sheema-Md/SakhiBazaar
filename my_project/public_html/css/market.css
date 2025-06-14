@@ -1,0 +1,213 @@
+
+    body {
+        margin: 0; font-family: Arial, sans-serif; background:linear-gradient(#EDE4F0);
+    }
+    header {
+        background-color: linear-gradient(#EDE4F0);
+        color: black;
+        padding: 15px 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 15px;
+        max-width: 1200px;
+        margin: auto;
+        width: 100%;
+    }
+    .header-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 16px;
+    }
+    .search-container {
+        display: flex; align-items: center; background: white;
+        padding: 5px; border-radius: 5px;
+        width: 100%; max-width: 700px; flex-grow: 1; min-width: 250px;
+    }
+    .search-container input {
+        border: none; outline: none; padding: 8px; flex: 1;
+    }
+    .search-container i {
+        color: gray; padding: 0 10px; cursor: pointer;
+    }
+    .icons {
+        display: flex;
+        gap: 20px;
+        font-size: 18px;
+        flex-shrink: 0;
+        align-items: center;
+        justify-content: center;
+    }
+    .market-content {
+        display: flex; padding: 20px; gap: 20px; flex-wrap: wrap;
+    }
+    .sidebar-container {
+        display: flex;
+        gap: 20px;
+        margin-bottom: 20px;
+    }
+    .content-wrapper {
+        display: flex;
+        gap: 20px;
+        flex-wrap: nowrap;
+    }
+    .filter-sidebar {
+        width: 250px;
+        background: #fff;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1); /* Changed from #EDE4F0 to a proper shadow */
+        flex-shrink: 0;
+        height: fit-content;
+    }
+    .products-section {
+        flex: 1;
+        min-width: 300px;
+    }
+    .filter-group {
+        margin-bottom: 20px;
+    }
+    .filter-group select, .filter-group input {
+        background-color: #f9f9f9;
+        border: 1px solid #aaa;
+        width: 100%;
+        padding: 8px;
+        margin-top: 5px;
+        border-radius: 5px;
+        box-sizing: border-box;
+    }
+    .filter-group label {
+        font-weight: bold; display: block; margin-bottom: 5px;
+        font-size: 14px;
+        color: #333;
+    }
+    .filter-actions {
+        display: flex; justify-content: flex-start; gap: 10px;
+    }
+    .filter-actions button {
+        padding: 8px 16px; cursor: pointer; border: none;
+        border-radius: 4px; color: white; font-weight: bold;
+    }
+    .filter-actions button:first-child {
+        background-color: #ccc; color: #333;
+    }
+    .filter-actions button:last-child {
+        background-color: #4b0082;
+    }
+    h2 {
+        margin-top: 0; margin-bottom: 15px; color: #333;
+    }
+    .product-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+        gap: 20px;
+    }
+    .product-card {
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        padding: 10px;
+        text-align: center;
+        background: #fff;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        display: flex; /* Make it a flex container */
+        flex-direction: column; /* Stack children vertically */
+        justify-content: space-between; /* Push buttons to bottom */
+        height: 100%; /* Ensure cards are same height */
+    }
+    .product-card img {
+        max-width: 100%;
+        height: auto;
+        border-radius: 4px;
+        margin-bottom: 10px;
+    }
+    .product-card h3 {
+        font-size: 1.1em;
+        margin: 5px 0;
+        color: #333;
+    }
+    .product-card p {
+        font-size: 0.9em;
+        color: #666;
+        margin: 5px 0;
+    }
+    .product-card span {
+        font-size: 1.2em;
+        font-weight: bold;
+        color: #4b0082;
+        margin-bottom: 10px;
+        display: block; /* Ensure price is on its own line */
+    }
+    .product-card .rating {
+        color: gold; /* Or a suitable color for stars */
+        margin-bottom: 10px;
+    }
+    .product-buttons {
+        display: flex; justify-content: center; gap: 10px;
+        margin-top: auto; /* Push buttons to the bottom of the card */
+    }
+    .product-card button {
+        padding: 5px 10px;
+        border: none; border-radius: 4px;
+        background-color: #4b0082;
+        color: white; cursor: pointer;
+        flex-shrink: 0;
+        font-size: 0.9em;
+    }
+    .product-card button.wishlist {
+        background-color: #e91e63;
+        margin-left: 5px;
+    }
+
+    #filterToggleBtn {
+        display: none;
+        background-color: #4b0082;
+        color: white;
+        border: none;
+        padding: 12px 20px;
+        cursor: pointer;
+        font-weight: bold;
+        width: 100%;
+        margin: 10px 0;
+        border-radius: 5px;
+    }
+    #mobileFilterWrapper {
+        display: none;
+        background: #fff;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        transition: all 0.3s ease-in-out;
+    }
+    #mobileFilterWrapper.active {
+        display: block;
+    }
+    .filter-group select,
+    .filter-group input {
+        font-size: 14px;
+    }
+    @media (max-width: 768px) {
+        .market-content {
+            flex-direction: column;
+            padding: 10px;
+        }
+        .filter-sidebar {
+            display: none;
+        }
+        #filterToggleBtn {
+            display: block;
+        }
+        .products-section {
+            min-width: 100%;
+        }
+        .filter-group {
+            margin-bottom: 15px;
+        }
+        #mobileFilterWrapper {
+            display: none;
+            margin-bottom: 10px;
+        }
+        #mobileFilterWrapper.active {
+            display: block;
+        }
+    }

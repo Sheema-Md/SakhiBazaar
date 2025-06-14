@@ -21,11 +21,13 @@ if (!empty($_FILES['prod-img']['name'])) {
 
 // Update logic
 if ($imagePath) {
-    $stmt = $conn->prepare("UPDATE products SET product_name=?, category=?, price=?, stock_status=?, quantity=?,prod-color=?,prod-size=?,material=?, description=?, image_url=? WHERE id=?");
-    $stmt->bind_param("ssdsssssssi", $name, $category, $price, $stock, $quantity, $description, $imagePath, $productId);
+    $stmt = $conn->prepare("UPDATE products SET product_name=?, category=?, price=?, stock_status=?, quantity=?, `prod-color`=?, `prod-size`=?, material=?, description=?, image_url=? WHERE id=?");
+
+$stmt->bind_param("ssdissssssi", $name, $category, $price, $stock, $quantity, $color, $size, $material, $description, $imagePath, $productId);
+
 } else {
     $stmt = $conn->prepare("UPDATE products SET product_name=?, category=?, price=?, stock_status=?, quantity=?, description=? WHERE id=?");
-    $stmt->bind_param("ssdssssssi", $name, $category, $price, $stock, $quantity, $description, $productId);
+    $stmt->bind_param("ssdsssi", $name, $category, $price, $stock, $quantity, $description, $productId);
 }
 
 $stmt->execute();
